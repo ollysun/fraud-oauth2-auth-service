@@ -70,7 +70,6 @@ public class AuthorisationServerConfig
                 new KeyStoreKeyFactory(
                         new ClassPathResource("auth.jks"),"auth123".toCharArray());
           jwtAccessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("auth"));
-
         return jwtAccessTokenConverter;
     }
 
