@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class BaseEntity implements Serializable {
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @NotBlank(message = "Please enter the name of the creator")
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "created_by")
     private String createdBy;
  
     @Column(name = "updated_at")

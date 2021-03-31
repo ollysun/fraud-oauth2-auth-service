@@ -25,14 +25,10 @@ public class Permission extends BaseEntity {
     private String name;
 
     @Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
-    @Enumerated(EnumType.ORDINAL)
     private Boolean status;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "permission")
-    Set<RolePermission> rolePermission = new HashSet<>();
 
     @ToString.Exclude
     @OneToMany(mappedBy = "permission")
-    Set<UserPermission> userPermission = new HashSet<>();
+    private Set<UserPermission> userPermission = new HashSet<>();
 }

@@ -8,13 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
-@Service
 public class SecurityUser implements UserDetails {
 
-    @Autowired
     private final User user;
 
-    @Autowired
     private final Collection<? extends GrantedAuthority> roles;
 
     public SecurityUser(User user, Collection<? extends GrantedAuthority> roles) {

@@ -29,7 +29,7 @@ public class Role extends BaseEntity {
     private String description;
 
     @Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
-    @Enumerated(EnumType.ORDINAL)
+//    @Enumerated(EnumType.ORDINAL)
     private Boolean status;
 
     @ManyToMany(mappedBy = "roles")

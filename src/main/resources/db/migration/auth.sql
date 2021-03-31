@@ -1,33 +1,4 @@
 
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(80) NOT NULL,
-  `password` text NOT NULL,
-  `salt` VARCHAR(80) NOT NULL,
-  `first_name` VARCHAR(80) NOT NULL,
-  `last_name` VARCHAR(80) NOT NULL,
-  `email` VARCHAR(80) NOT NULL,
-  `phone` VARCHAR(80) NOT NULL,
-  `status` VARCHAR(80) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC));
-
-CREATE TABLE IF NOT EXISTS `roles` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(80) NOT NULL,
-  `code` VARCHAR(80) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `code_UNIQUE` (`code` ASC));
-
-CREATE TABLE IF NOT EXISTS `user_role` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `user_id` BIGINT NOT NULL,
-    `role_id` BIGINT NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-    FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-);
-
 CREATE TABLE IF NOT EXISTS `oauth_client_details` (
   client_id VARCHAR(256) PRIMARY KEY,
   resource_ids VARCHAR(256),
@@ -50,21 +21,21 @@ CREATE TABLE IF NOT EXISTS `oauth_client_token` (
   client_id VARCHAR(256)
 );
 
-CREATE TABLE IF NOT EXISTS `oauth_access_token` (
-  token_id VARCHAR(256),
-  token BLOB,
-  authentication_id VARCHAR(256),
-  user_name VARCHAR(256),
-  client_id VARCHAR(256),
-  authentication BLOB,
-  refresh_token VARCHAR(256)
-);
+CREATE TABLE oauth_access_token (
+    authentication_id varchar(255) NOT NULL PRIMARY KEY,
+    token_id varchar(255) NOT NULL,
+    token blob NOT NULL,
+    user_name varchar(255) NOT NULL,
+    client_id varchar(255) NOT NULL,
+    authentication blob NOT NULL,
+    refresh_token varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oauth_refresh_token` (
-  token_id VARCHAR(256),
-  token BLOB,
-  authentication BLOB
-);
+CREATE TABLE oauth_refresh_token (
+    token_id varchar(255) NOT NULL,
+    token blob NOT NULL,
+    authentication blob NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `oauth_code` (
   code VARCHAR(256), authentication BLOB

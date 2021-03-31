@@ -1,6 +1,5 @@
 package com.etz.authorisationserver.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,11 +8,10 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
 @ToString
@@ -31,9 +29,6 @@ public class User extends BaseEntity implements Serializable {
 	@NotBlank(message = "User name cannot be empty")
 	@Column(name = "password", columnDefinition = "TEXT",nullable = false)
 	private String password;
-
-	@Column(name = "salt", columnDefinition = "TEXT")
-	private String salt;
 
 	@NotBlank(message = "First name cannot be empty")
 	@Column(name = "first_name")
@@ -62,7 +57,7 @@ public class User extends BaseEntity implements Serializable {
 
 	@ToString.Exclude
 	@OneToMany(mappedBy = "user")
-	Collection<UserPermission> userPermissions = new HashSet<>();
+	private Collection<UserPermission> userPermissions = new HashSet<>();
 
 	@Override
 	public boolean equals(Object o) {

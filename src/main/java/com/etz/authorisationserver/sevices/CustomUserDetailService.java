@@ -34,20 +34,20 @@ public class CustomUserDetailService implements UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
-        return getGrantedAuthorities(getPrivileges(roles));
+        return getGrantedAuthorities(getPermissions(roles));
     }
 
-    private List<String> getPrivileges(final Collection<Role> roles) {
-        final List<String> privileges = new ArrayList<>();
+    private List<String> getPermissions(final Collection<Role> roles) {
+        final List<String> permissions = new ArrayList<>();
         final List<Permission> collection = new ArrayList<>();
         for (final Role role : roles) {
             collection.addAll(role.getPermissions());
         }
         for (final Permission item : collection) {
-            privileges.add(item.getName());
+            permissions.add(item.getName());
         }
 
-        return privileges;
+        return permissions;
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(final List<String> permissions) {
