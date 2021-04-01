@@ -32,9 +32,11 @@ public class Role extends BaseEntity {
 //    @Enumerated(EnumType.ORDINAL)
     private Boolean status;
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
 
+    @ToString.Exclude
     @ManyToMany
     @JoinTable(
             name = "role_permission",
