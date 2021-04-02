@@ -1,4 +1,4 @@
-package com.etz.authorisationserver.sevices;
+package com.etz.authorisationserver.security;
 
 import com.etz.authorisationserver.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;

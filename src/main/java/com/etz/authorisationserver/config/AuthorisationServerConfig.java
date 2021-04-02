@@ -1,9 +1,12 @@
 package com.etz.authorisationserver.config;
 
 import com.etz.authorisationserver.sevices.CustomUserDetailService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -14,12 +17,13 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 
+@Slf4j
 @Configuration
 @EnableAuthorizationServer
 public class AuthorisationServerConfig
@@ -29,28 +33,33 @@ public class AuthorisationServerConfig
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailService userDetailsService;
-
+    @Autowired
+    private JdbcTokenStores jdbcTokenStores;
 
     public AuthorisationServerConfig(DataSource dataSource, PasswordEncoder passwordEncoder,
                                      AuthenticationManager authenticationManager,
-                                      CustomUserDetailService userDetailsService) {
+                                     CustomUserDetailService userDetailsService, JdbcTokenStores jdbcTokenStores) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
+        this.jdbcTokenStores = jdbcTokenStores;
     }
 
-    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(jwtAccessTokenConverter());
-    }
+//    @Bean
+//    public JdbcTokenStore tokenStore() {
+//        return new JdbcTokenStore(Objects.requireNonNull(jdbcTemplate.getDataSource()));
+//    }
+
+
 
     @Bean
+    @Primary
     public DefaultTokenServices tokenServices(final TokenStore tokenStore,
                                               final ClientDetailsService clientDetailsService) {
         DefaultTokenServices tokenServices = new DefaultTokenServices();
         tokenServices.setSupportRefreshToken(true);
-        tokenServices.setTokenStore(tokenStore());
+        tokenServices.setTokenStore(jdbcTokenStores);
         tokenServices.setClientDetailsService(clientDetailsService);
         tokenServices.setAuthenticationManager(this.authenticationManager);
         return tokenServices;
@@ -59,10 +68,21 @@ public class AuthorisationServerConfig
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        KeyStoreKeyFactory keyStoreKeyFactory =
-                new KeyStoreKeyFactory(
-                        new ClassPathResource("auth.jks"),"auth123".toCharArray());
-          jwtAccessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("auth"));
+//        KeyStoreKeyFactory keyStoreKeyFactory =
+//                new KeyStoreKeyFactory(
+//                        new ClassPathResource("auth.jks"),"auth123".toCharArray());
+//          jwtAccessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("auth"));
+//        return jwtAccessTokenConverter;
+
+//        ClassPathResource ksFile =
+//                new ClassPathResource("auth.jks");
+//        KeyStoreKeyFactory ksFactory =
+//                new KeyStoreKeyFactory(ksFile, "auth123".toCharArray());
+//        KeyPair keyPair = ksFactory.getKeyPair("auth");
+//        jwtAccessTokenConverter.setKeyPair(keyPair);
+//        return jwtAccessTokenConverter;
+
+        jwtAccessTokenConverter.setSigningKey("secret");
         return jwtAccessTokenConverter;
     }
 
@@ -76,7 +96,7 @@ public class AuthorisationServerConfig
         endpoints.authenticationManager(authenticationManager)
                 .accessTokenConverter(jwtAccessTokenConverter())
                 .userDetailsService(userDetailsService)
-                .tokenStore(tokenStore());
+                .tokenStore(jdbcTokenStores);
     }
 
 
