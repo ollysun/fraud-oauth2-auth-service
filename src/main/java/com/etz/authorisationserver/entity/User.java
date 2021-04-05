@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 
 @Entity
@@ -49,15 +50,15 @@ public class User extends BaseEntity implements Serializable {
 
 	private Boolean status;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_role",
+	@ManyToMany
+	@JoinTable(name = "user_role",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private Collection<Role> roles;
+	private List<Role> roles;
 
 	@ToString.Exclude
 	@OneToMany(mappedBy = "user")
-	private Collection<UserPermission> userPermissions = new HashSet<>();
+	private List<UserPermission> userPermissions;
 
 	@Override
 	public boolean equals(Object o) {

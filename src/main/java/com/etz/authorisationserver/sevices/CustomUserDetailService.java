@@ -5,6 +5,7 @@ import com.etz.authorisationserver.entity.Role;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.repository.IUserRepository;
 import com.etz.authorisationserver.security.SecurityUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class CustomUserDetailService implements UserDetailsService {

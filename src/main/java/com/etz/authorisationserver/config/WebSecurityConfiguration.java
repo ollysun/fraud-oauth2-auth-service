@@ -15,17 +15,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final DataSource dataSource;
-
-    public WebSecurityConfiguration(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     @Bean
     @Override

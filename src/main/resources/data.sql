@@ -4,7 +4,7 @@ INSERT INTO oauth_client_details
     refresh_token_validity, additional_information, autoapprove)
 VALUES
     ('testClientId', 'test-manager','$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
-    'read,write','password,authorization_code,refresh_token',null, 'ROLE_USER', 360000,
+    'read,write','password,authorization_code,refresh_token',null, 'ROLE_CLIENT,ROLE_TRUSTED_CLIENT', 360000,
     360000, null, true);
 
 INSERT INTO oauth_client_details
@@ -12,7 +12,7 @@ INSERT INTO oauth_client_details
       scope, authorized_grant_types,web_server_redirect_uri, authorities, access_token_validity,
       refresh_token_validity, additional_information, autoapprove)
 VALUES ('clientId', 'fraud-engine','$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
-'read', 'password,authorization_code,refresh_token', null,'ROLE_USER', 360000,
+'read', 'password,authorization_code,refresh_token', null,'ROLE_CLIENT,ROLE_TRUSTED_CLIENT', 360000,
  360000,null,true);
 
 INSERT INTO oauth_client_details
@@ -20,7 +20,7 @@ INSERT INTO oauth_client_details
        scope, authorized_grant_types,web_server_redirect_uri, authorities, access_token_validity,
        refresh_token_validity, additional_information, autoapprove)
 VALUES ('clientId2', 'fraud-eagle-eye-manager','$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
-'read,write', 'password,authorization_code,refresh_token', null,'ROLE_ADMIN', 360000,
+'read,write', 'password,authorization_code,refresh_token', null,'ROLE_CLIENT,ROLE_TRUSTED_CLIENT', 360000,
 360000, null, true);
 
 
@@ -35,7 +35,7 @@ VALUES('admin','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', '
 /* Insert Data into Role Table  */
 insert into authorisation_service.role(name, description, status) values('ROLE_USER', 'user role', 1);
 insert into authorisation_service.role(name, description, status) values('ROLE_ADMIN', 'admin role', 1);
-insert into authorisation_service.role(name, description, status) values('ROLE_API_USER', 'api role',1);
+insert into authorisation_service.role(name, description, status) values('ROLE_USER', 'api role',1);
 insert into authorisation_service.role(name, description, status) values('ROLE_DBA', 'dba role', 1 );
 insert into authorisation_service.role(name, description, status) values('ROLE_SELLER', 'seller role', 1);
 insert into authorisation_service.role(name, description, status) values('ROLE_BUYER', 'buyer role', 1);
