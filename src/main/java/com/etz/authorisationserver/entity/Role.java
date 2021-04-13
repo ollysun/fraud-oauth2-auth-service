@@ -6,10 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "role")
@@ -30,7 +27,6 @@ public class Role extends BaseEntity {
     private String description;
 
     @Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
-//    @Enumerated(EnumType.ORDINAL)
     private Boolean status;
 
     @ToString.Exclude
@@ -46,6 +42,17 @@ public class Role extends BaseEntity {
     )
     private List<Permission> permissions;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role)) return false;
+        if (!super.equals(o)) return false;
+        Role role = (Role) o;
+        return id == role.id && name.equals(role.name) && description.equals(role.description) && status.equals(role.status) && users.equals(role.users) && permissions.equals(role.permissions);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, name, description, status, users, permissions);
+    }
 }
