@@ -1,17 +1,15 @@
 package com.etz.authorisationserver.entity;
 
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name="oauth_refresh_token")
 public class OauthRefreshToken {
@@ -32,5 +30,18 @@ public class OauthRefreshToken {
 	@Column(name="authentication", columnDefinition = "mediumblob")
 	private byte[] authentication;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		OauthRefreshToken that = (OauthRefreshToken) o;
+
+		return id != null && id.equals(that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 586801522;
+	}
 }
 

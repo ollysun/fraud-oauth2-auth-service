@@ -1,16 +1,14 @@
 package com.etz.authorisationserver.entity;
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name="oauth_code")
 public class OauthCode {
@@ -27,6 +25,18 @@ public class OauthCode {
 	@Column(name="authentication", columnDefinition = "mediumblob")
 	private byte[] authentication;
 
-	
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		OauthCode oauthCode = (OauthCode) o;
+
+		return id != null && id.equals(oauthCode.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 2045389063;
+	}
 }

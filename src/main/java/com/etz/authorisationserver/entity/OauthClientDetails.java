@@ -1,18 +1,16 @@
 package com.etz.authorisationserver.entity;
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
+import javax.persistence.*;
 import java.time.LocalTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name="oauth_client_details")
 public class OauthClientDetails {
@@ -62,6 +60,19 @@ public class OauthClientDetails {
 	@CreationTimestamp
 	private LocalTime createdAt;
 
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		OauthClientDetails that = (OauthClientDetails) o;
+
+		return id != null && id.equals(that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 608143201;
+	}
 }
 
