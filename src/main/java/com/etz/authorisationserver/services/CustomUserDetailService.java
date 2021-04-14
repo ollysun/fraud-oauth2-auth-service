@@ -1,4 +1,4 @@
-package com.etz.authorisationserver.sevices;
+package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.entity.Permission;
 import com.etz.authorisationserver.entity.Role;

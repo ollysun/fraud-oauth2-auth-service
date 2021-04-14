@@ -1,6 +1,6 @@
 package com.etz.authorisationserver.config;
 
-import com.etz.authorisationserver.sevices.CustomUserDetailService;
+import com.etz.authorisationserver.services.CustomUserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

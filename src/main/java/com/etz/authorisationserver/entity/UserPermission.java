@@ -20,12 +20,11 @@ public class UserPermission extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", columnDefinition = "bigint", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_USER_PERMISSION_ROLE_ID"))
-    private User user;
+    private Long userId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "permission_id", columnDefinition = "bigint", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_USER_PERMISSION_PERMISSION_ID"))
-    private Permission permission;
+    private Long permissionId;
+
 
 }

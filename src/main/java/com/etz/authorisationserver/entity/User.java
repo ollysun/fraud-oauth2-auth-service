@@ -6,8 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -39,7 +37,7 @@ public class User extends BaseEntity implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@NotBlank(message = "Last name cannot be empty")
+	@NotBlank(message = "Phone cannot be empty")
 	@Column(name = "phone")
 	private String phone;
 
@@ -48,12 +46,20 @@ public class User extends BaseEntity implements Serializable {
 	@Column(name = "email")
 	private String email;
 
+	@Column(nullable = false, name = "has_Role", columnDefinition = "TINYINT", length = 1)
+	private Boolean hasRole;
+
+	@Column(nullable = false, name = "has_Permission", columnDefinition = "TINYINT", length = 1)
+	private Boolean hasPermission;
+
+	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;
 
 	@ManyToMany
 	@JoinTable(name = "user_role",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	@ToString.Exclude
 	private List<Role> roles;
 
 	@ToString.Exclude
