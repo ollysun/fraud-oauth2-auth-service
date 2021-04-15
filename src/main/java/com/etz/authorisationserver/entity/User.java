@@ -46,11 +46,11 @@ public class User extends BaseEntity implements Serializable {
 	@Column(name = "email")
 	private String email;
 
-	@Column(nullable = false, name = "has_Role", columnDefinition = "TINYINT", length = 1)
-	private Boolean hasRole;
+	@Column( name = "has_Role", columnDefinition = "TINYINT", length = 1)
+	private Boolean hasRole = Boolean.TRUE;
 
-	@Column(nullable = false, name = "has_Permission", columnDefinition = "TINYINT", length = 1)
-	private Boolean hasPermission;
+	@Column(name = "has_Permission", columnDefinition = "TINYINT", length = 1)
+	private Boolean hasPermission = Boolean.FALSE;
 
 	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;

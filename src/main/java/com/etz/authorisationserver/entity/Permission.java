@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Permission extends BaseEntity {
+public class Permission extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "bigint")

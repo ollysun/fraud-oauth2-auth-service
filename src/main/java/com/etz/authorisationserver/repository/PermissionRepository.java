@@ -10,7 +10,6 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
     Permission findByName(String name);
 
-
     @Override
     void delete(Permission permission);
 }

@@ -2,10 +2,11 @@ package com.etz.authorisationserver.dto.request;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class UpdateRoleRequest {
+public class UpdateRoleRequest implements Serializable {
     private String roleName;
     private String description;
     private List<Long> permissions;

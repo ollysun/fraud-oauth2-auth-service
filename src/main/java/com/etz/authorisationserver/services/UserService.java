@@ -2,7 +2,7 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
-import com.etz.authorisationserver.dto.response.UserResponse;
+import com.etz.authorisationserver.dto.response.UserEntityResponse;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.entity.UserPermission;
 import com.etz.authorisationserver.entity.UserRole;
@@ -11,11 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -23,8 +20,7 @@ import java.util.Objects;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
-
+    private UserRepository userRepository;
 
     @Autowired
     private UserPermissionRepository userPermissionRepository;
@@ -43,10 +39,12 @@ public class UserService {
         createUserRequest.setStatus(Boolean.TRUE);
         User user = userRepository.save(createUserRequest);
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())){
-            userRole.setRoleId(createUserRequest.getRoleId());
-            userRole.setUserId(user.getId());
-            userRole.setCreatedBy(createUserRequest.getCreatedBy());
-            userRoleRepository.save(userRole);
+            createUserRequest.getRoleId().forEach(roleId -> {
+                userRole.setRoleId(roleId);
+                userRole.setUserId(user.getId());
+                userRole.setCreatedBy(createUserRequest.getCreatedBy());
+                userRoleRepository.save(userRole);
+            });
         }
 
         if (Boolean.TRUE.equals(createUserRequest.getHasPermission())){
@@ -68,10 +66,12 @@ public class UserService {
         User updatedUser = userRepository.save(updateUserRequest);
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())){
-            userRole.setRoleId(updateUserRequest.getRoleId());
-            userRole.setUserId(updatedUser.getId());
-            userRole.setUpdatedBy(updateUserRequest.getUpdatedBy());
-            userRoleRepository.save(userRole);
+            updateUserRequest.getRoleId().forEach(roleId -> {
+                userRole.setRoleId(roleId);
+                userRole.setUserId(userId);
+                userRole.setCreatedBy(updateUserRequest.getUpdatedBy());
+                userRoleRepository.save(userRole);
+            });
         }
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasPermission())
@@ -87,16 +87,17 @@ public class UserService {
         return updatedUser;
     }
 
-    public List<UserResponse> getAllUsers(Long userId){
+    public List<UserEntityResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<User> userList = new ArrayList<>();
-        List<UserResponse> userResponseList;
+        List<UserEntityResponse> userResponseList;
         if (userId == null){
-            userList = userRepository.findAll();
-            userResponseList= assignUserResponseList(userList);
-        }else{
             userList.add(userRepository.findByUserId(userId));
-            userResponseList= assignUserResponseList(userList);
+        } else if (Boolean.TRUE.equals(activatedStatus)) {
+            userList.addAll(userRepository.findByStatus(true));
+        }else{
+            userList = userRepository.findAll();
         }
+        userResponseList= assignUserResponseList(userList);
         return userResponseList;
     }
 
@@ -118,9 +119,9 @@ public class UserService {
         return roleId;
     }
 
-    private List<UserResponse> assignUserResponseList(List<User> userList) {
-        List<UserResponse> userResponseList = new ArrayList<>();
-        UserResponse userResponse = new UserResponse();
+    private List<UserEntityResponse> assignUserResponseList(List<User> userList) {
+        List<UserEntityResponse> userResponseList = new ArrayList<>();
+        UserEntityResponse userResponse = new UserEntityResponse();
         userList.forEach(userListObject ->{
             userResponse.setUserId(userListObject.getId());
             userResponse.setEmail(userListObject.getEmail());

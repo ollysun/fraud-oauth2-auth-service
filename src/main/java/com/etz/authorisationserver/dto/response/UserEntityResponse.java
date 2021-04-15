@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class UserResponse {
+public class UserEntityResponse {
     private Long userId;
     private String userName;
     private String firstName;

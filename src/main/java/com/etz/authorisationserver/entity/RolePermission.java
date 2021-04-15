@@ -12,7 +12,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class RolePermissionEntity extends BaseEntity implements Serializable {
+public class RolePermission extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +27,9 @@ public class RolePermissionEntity extends BaseEntity implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RolePermissionEntity)) return false;
+        if (!(o instanceof RolePermission)) return false;
         if (!super.equals(o)) return false;
-        RolePermissionEntity that = (RolePermissionEntity) o;
+        RolePermission that = (RolePermission) o;
         return id.equals(that.id) && roleId.equals(that.roleId) && permissionId.equals(that.permissionId);
     }
 

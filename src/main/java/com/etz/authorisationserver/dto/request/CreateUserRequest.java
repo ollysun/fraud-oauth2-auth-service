@@ -8,6 +8,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class CreateUserRequest extends User {
-    private Long roleId;
+    private List<Long> roleId;
     private List<Long> permissions;
 }

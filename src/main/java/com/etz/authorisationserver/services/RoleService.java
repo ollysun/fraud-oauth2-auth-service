@@ -5,7 +5,7 @@ import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
 import com.etz.authorisationserver.dto.response.RoleResponse;
 import com.etz.authorisationserver.entity.Role;
-import com.etz.authorisationserver.entity.RolePermissionEntity;
+import com.etz.authorisationserver.entity.RolePermission;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.entity.UserPermission;
 import com.etz.authorisationserver.repository.PermissionRepository;
@@ -32,7 +32,7 @@ public class RoleService {
     private PermissionRepository permissionRepository;
 
     private Role role;
-    private RolePermissionEntity rolePermissionEntity;
+    private RolePermission rolePermissionEntity;
 
     @Transactional
     public Role createRole(CreateRoleRequest createRoleRequest) {
@@ -61,7 +61,7 @@ public class RoleService {
         }else{
             throw new RuntimeException("Not found");
         }
-        List<RolePermissionEntity> rolePermissionList = rolePermissionRepository.findByRoleId(roleId);
+        List<RolePermission> rolePermissionList = rolePermissionRepository.findByRoleId(roleId);
         updateRoleRequest.getPermissions().forEach(rolePermissionObject ->{
             rolePermissionEntity.setRoleId(roleId);
             rolePermissionEntity.setPermissionId(rolePermissionObject);
@@ -77,14 +77,12 @@ public class RoleService {
         List<RoleResponse> roleResponseList;
         if (roleId != null) {
             roleList.add(roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("not found")));
-            roleResponseList = getRoleResponse(roleList);
         } else if (Boolean.TRUE.equals(activatedStatus)) {
             roleList.addAll(roleRepository.findByStatus(true));
-            roleResponseList = getRoleResponse(roleList);
         } else {
             roleList = roleRepository.findAll();
-            roleResponseList = getRoleResponse(roleList);
         }
+        roleResponseList = getRoleResponse(roleList);
         return roleResponseList;
     }
 
@@ -105,7 +103,7 @@ public class RoleService {
     }
 
     private List<String> getPermissions(Long roleId) {
-        List<RolePermissionEntity> rolePermissionList = rolePermissionRepository.findByRoleId(roleId);
+        List<RolePermission> rolePermissionList = rolePermissionRepository.findByRoleId(roleId);
         List<String> permissionsList = new ArrayList<>();
         rolePermissionList.forEach(rolePermissionObject -> {
             permissionsList.add(permissionRepository.getOne(rolePermissionObject.getRoleId()).getName());
