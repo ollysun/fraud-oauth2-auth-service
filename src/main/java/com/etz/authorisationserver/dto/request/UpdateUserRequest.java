@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"password"})
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UpdateUserRequest extends User {

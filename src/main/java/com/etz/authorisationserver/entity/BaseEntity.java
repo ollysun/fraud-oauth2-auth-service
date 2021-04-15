@@ -8,6 +8,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
@@ -20,14 +21,14 @@ import org.joda.time.DateTime;
 public class BaseEntity implements Serializable {
 
     @Column(name = "created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @NotBlank(message = "Please enter the name of the creator")
     @Column(name = "created_by")
     private String createdBy;
  
     @Column(name = "updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
  
     @Column(name = "updated_by")
     private String updatedBy;
@@ -48,7 +49,8 @@ public class BaseEntity implements Serializable {
         }
         setCreatedBy(username);
 
-        setCreatedAt(new DateTime());
+        LocalDateTime today = LocalDateTime.now();
+        setCreatedAt(today);
     }
 
     /**
@@ -69,8 +71,8 @@ public class BaseEntity implements Serializable {
                             + "in the RequestContext for this thread.");
         }
         setUpdatedBy(username);
-
-        setUpdatedAt(new DateTime());
+        LocalDateTime today = LocalDateTime.now();
+        setUpdatedAt(today);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.etz.authorisationserver.dto.response;
 
-import com.etz.fraudengine.util.MetaData;
-import com.etz.fraudengine.util.RequestUtil;
+import com.etz.authorisationserver.util.MetaData;
+import com.etz.authorisationserver.util.RequestUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;

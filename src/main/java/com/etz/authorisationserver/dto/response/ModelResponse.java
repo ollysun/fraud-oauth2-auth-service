@@ -1,6 +1,6 @@
 package com.etz.authorisationserver.dto.response;
 
-import com.etz.fraudengine.util.RequestUtil;
+import com.etz.authorisationserver.util.RequestUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

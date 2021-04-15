@@ -1,13 +1,17 @@
 package com.etz.authorisationserver.dto.request;
 
-import lombok.Data;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
-@Data
-public class CreateRoleRequest {
-	private String roleName;
-	private String description;
-	private List<Long> permissionList;
-	private String createdBy;
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class CreateRoleRequest implements Serializable {
+    private String roleName;
+    private String description;
+    private List<Long> permissionList;
+    private String createdBy;
 }

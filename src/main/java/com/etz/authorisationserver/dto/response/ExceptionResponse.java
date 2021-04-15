@@ -14,5 +14,5 @@ public class ExceptionResponse {
     private String errorMessage;
 
     @JsonProperty("errors")
-    private Object errors = null;
+    private Object errors;
 }

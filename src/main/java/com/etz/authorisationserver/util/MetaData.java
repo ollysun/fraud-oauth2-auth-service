@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.domain.Page;
 
-import static com.etz.fraudengine.constant.AppConstant.PAGE;
+import static com.etz.authorisationserver.constant.AppConstant.PAGE;
 
 @Data
 public class MetaData<T>{

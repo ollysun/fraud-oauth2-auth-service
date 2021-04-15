@@ -1,21 +1,18 @@
 package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
-import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.entity.Permission;
-import com.etz.authorisationserver.entity.User;
-import com.etz.authorisationserver.repository.IPermissionRepository;
+import com.etz.authorisationserver.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PermissionService {
 
     @Autowired
-    private IPermissionRepository iPermissionRepository;
+    private PermissionRepository iPermissionRepository;
 
     public List<Permission> getAllPermissions() {
         List<Permission> permissionList;

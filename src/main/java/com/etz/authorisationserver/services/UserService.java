@@ -2,6 +2,7 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
+import com.etz.authorisationserver.dto.response.UserResponse;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.entity.UserPermission;
 import com.etz.authorisationserver.entity.UserRole;
@@ -11,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -20,14 +23,17 @@ import java.util.List;
 public class UserService {
 
     @Autowired
-    IUserRepository iUserRepository;
+    UserRepository userRepository;
 
 
     @Autowired
-    private IUserPermissionRepository iUserPermissionRepository;
+    private UserPermissionRepository userPermissionRepository;
 
     @Autowired
-    private IUserRoleRepository iUserRoleRepository;
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private PermissionRepository permissionRepository;
 
     private UserRole userRole;
     private UserPermission userPermission;
@@ -35,12 +41,12 @@ public class UserService {
 
     public User createUser(CreateUserRequest createUserRequest){
         createUserRequest.setStatus(Boolean.TRUE);
-        User user = iUserRepository.save(createUserRequest);
+        User user = userRepository.save(createUserRequest);
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())){
             userRole.setRoleId(createUserRequest.getRoleId());
             userRole.setUserId(user.getId());
             userRole.setCreatedBy(createUserRequest.getCreatedBy());
-            iUserRoleRepository.save(userRole);
+            userRoleRepository.save(userRole);
         }
 
         if (Boolean.TRUE.equals(createUserRequest.getHasPermission())){
@@ -48,96 +54,92 @@ public class UserService {
                 userPermission.setUserId(user.getId());
                 userPermission.setPermissionId(permissionId);
                 userPermission.setCreatedBy(createUserRequest.getCreatedBy());
-                iUserPermissionRepository.save(userPermission);
+                userPermissionRepository.save(userPermission);
             }
         }
         return user;
     }
 
     public User updateUser(UpdateUserRequest updateUserRequest, Long userId){
-        User user = iUserRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId);
         if (user == null){
             throw new RuntimeException("User not found");
         }
-        User updatedUser = iUserRepository.save(updateUserRequest);
-
-//        if (updateUserRequest.getPermissions().size() > 0) {
-//            // get previous user permissions
-//            List<UserPermission> previousUserPermEntity = iUserPermissionRepository
-//                    .findByUserId(updatedUser.getId());
-//            List<Long> previousUserPermissions = new ArrayList<>();
-//            previousUserPermEntity.forEach(userPermEntity -> {
-//                previousUserPermissions.add(userPermEntity.getPermissionId());
-//            });
-//        }
+        User updatedUser = userRepository.save(updateUserRequest);
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())){
             userRole.setRoleId(updateUserRequest.getRoleId());
             userRole.setUserId(updatedUser.getId());
             userRole.setUpdatedBy(updateUserRequest.getUpdatedBy());
-            iUserRoleRepository.save(userRole);
+            userRoleRepository.save(userRole);
         }
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasPermission())
-                && updateUserRequest.getPermissions().size() > 0){
+                && !(updateUserRequest.getPermissions().isEmpty())){
             updateUserRequest.getPermissions().forEach(permissionId -> {
                 userPermission.setUserId(updatedUser.getId());
                 userPermission.setPermissionId(permissionId);
                 userPermission.setUpdatedBy(updateUserRequest.getCreatedBy());
-                iUserPermissionRepository.save(userPermission);
+                userPermissionRepository.save(userPermission);
             });
 
         }
         return updatedUser;
     }
 
-//    private void deleteRemovedUserPermission(List<UserPermission> previousUserPermEntity, List<Long> permissions) {
-//        // get previous user permissions IDs
-//        List<Long> previousUserPermissions = new ArrayList<>();
-//        previousUserPermEntity.forEach(userPermEntity -> {
-//            previousUserPermissions.add(userPermEntity.getPermissionId());
-//        });
-//
-//        // filter out permissions that should still be retained
-//        List<Long> previousUserPermToDelete = previousUserPermissions.stream().collect(Collectors.toList());
-//        previousUserPermToDelete.removeAll(permissions);
-//
-//        // delete permissions no longer needed
-//        previousUserPermEntity.forEach(userPermEntity -> {
-//            previousUserPermToDelete.forEach(permissionId ->{
-//                if(userPermEntity.getPermissionId() == permissionId) {
-//                    userPermissionRepository.deleteById(userPermEntity.getId());
-//                }
-//            });
-//        });
-//    }
-
-    public List<User> getAllUsers(Long userId){
+    public List<UserResponse> getAllUsers(Long userId){
         List<User> userList = new ArrayList<>();
+        List<UserResponse> userResponseList;
         if (userId == null){
-            userList = iUserRepository.findAll();
+            userList = userRepository.findAll();
+            userResponseList= assignUserResponseList(userList);
         }else{
-            userList.add(iUserRepository.findByUserId(userId));
+            userList.add(userRepository.findByUserId(userId));
+            userResponseList= assignUserResponseList(userList);
         }
-        return userList;
+        return userResponseList;
     }
 
-
-    public boolean deleteUser(Long userId) {
-        iUserRepository.deleteById(userId);
-        deleteUserRoleAndPermission(userId);
-        return true;
-    }
-
-    private void deleteUserRoleAndPermission(Long userId){
-        List<UserRole> userRoleList = iUserRoleRepository.findUserById(userId);
-        userRoleList.forEach(userRoleEntity -> {
-            iUserRoleRepository.deleteById(userId);
+    private List<String> getUserPermissions(Long userId) {
+        List<UserPermission> userPermissionList = userPermissionRepository.findByUserId(userId);
+        List<String> permissionsList = new ArrayList<>();
+        userPermissionList.forEach(userPermissionListId ->{
+            permissionsList.add(permissionRepository.getOne(userPermissionListId.getPermissionId()).getName());
         });
-
-        List<UserPermission> userPermissionList = iUserPermissionRepository.findByUserId(userId);
-        userPermissionList.forEach(userRoleEntity -> {
-            iUserPermissionRepository.deleteById(userId);
-        });
+        return permissionsList;
     }
+
+    private List<Long> getUserRoleId(Long userId) {
+        List<UserRole> userRoleList = userRoleRepository.findUserById(userId);
+        List<Long> roleId = new ArrayList<>();
+        userRoleList.forEach(userRoleId -> {
+            roleId.add(userRoleId.getRoleId());
+        });
+        return roleId;
+    }
+
+    private List<UserResponse> assignUserResponseList(List<User> userList) {
+        List<UserResponse> userResponseList = new ArrayList<>();
+        UserResponse userResponse = new UserResponse();
+        userList.forEach(userListObject ->{
+            userResponse.setUserId(userListObject.getId());
+            userResponse.setEmail(userListObject.getEmail());
+            userResponse.setFirstName(userListObject.getFirstName());
+            userResponse.setLastName(userListObject.getLastName());
+            userResponse.setHasPermission(userListObject.getHasPermission());
+            userResponse.setHasRole(userListObject.getHasRole());
+            userResponse.setPhone(userListObject.getPhone());
+            userResponse.setRoleId(getUserRoleId(userListObject.getId()));
+            userResponse.setPermissions(getUserPermissions(userListObject.getId()));
+            userResponse.setStatus(userListObject.getStatus());
+            userResponse.setUserName(userListObject.getUsername());
+            userResponse.setCreatedBy(userListObject.getCreatedBy());
+            userResponse.setCreatedAt(userListObject.getCreatedAt());
+            userResponseList.add(userResponse);
+        });
+        return userResponseList;
+    }
+
+
+
 }

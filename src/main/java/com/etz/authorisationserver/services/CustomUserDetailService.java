@@ -3,7 +3,7 @@ package com.etz.authorisationserver.services;
 import com.etz.authorisationserver.entity.Permission;
 import com.etz.authorisationserver.entity.Role;
 import com.etz.authorisationserver.entity.User;
-import com.etz.authorisationserver.repository.IUserRepository;
+import com.etz.authorisationserver.repository.UserRepository;
 import com.etz.authorisationserver.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,12 @@ import java.util.List;
 public class CustomUserDetailService implements UserDetailsService {
 
     @Autowired
-    private IUserRepository iUserRepository;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user = iUserRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
         if (user == null)
             throw new UsernameNotFoundException("Could not find User");
         return new SecurityUser(user, getAuthorities(user.getRoles()));

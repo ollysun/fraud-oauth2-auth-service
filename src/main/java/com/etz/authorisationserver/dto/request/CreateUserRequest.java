@@ -1,6 +1,4 @@
 package com.etz.authorisationserver.dto.request;
-
-import com.etz.authorisationserver.entity.Permission;
 import com.etz.authorisationserver.entity.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
