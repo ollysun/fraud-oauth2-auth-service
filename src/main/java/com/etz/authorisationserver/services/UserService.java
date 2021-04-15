@@ -2,7 +2,7 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
-import com.etz.authorisationserver.dto.response.UserEntityResponse;
+import com.etz.authorisationserver.dto.response.UserResponse;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.entity.UserPermission;
 import com.etz.authorisationserver.entity.UserRole;
@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class UserService {
     private UserPermission userPermission;
 
 
-    public User createUser(CreateUserRequest createUserRequest){
+    public UserResponse createUser(CreateUserRequest createUserRequest){
         createUserRequest.setStatus(Boolean.TRUE);
         User user = userRepository.save(createUserRequest);
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())){
@@ -55,8 +57,37 @@ public class UserService {
                 userPermissionRepository.save(userPermission);
             }
         }
-        return user;
+        return outputUserResponse(user, createUserRequest);
     }
+
+    private UserResponse outputUserResponse(User user, CreateUserRequest createUserRequest){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserId(user.getId());
+        userResponse.setUserName(user.getUsername());
+        userResponse.setStatus(user.getStatus());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        userResponse.setPhone(user.getPhone());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setHasRole(user.getHasRole());
+        userResponse.setRoleId(createUserRequest.getRoleId());
+        userResponse.setHasPermission(user.getHasPermission());
+        userResponse.setPermissions(getPermissionName(createUserRequest.getPermissions()));
+        userResponse.setCreatedBy(user.getCreatedBy());
+        userResponse.setCreatedAt(user.getCreatedAt());
+
+        return userResponse;
+    }
+
+    // get permissions Names
+    public List<String> getPermissionName(List<Long> permissionList){
+        List<String> permissionNames = new ArrayList<>();
+        permissionList.forEach(permissionId -> {
+            permissionNames.add(permissionRepository.findById(permissionId).get().getName());
+        });
+        return permissionNames;
+    }
+
 
     public User updateUser(UpdateUserRequest updateUserRequest, Long userId){
         User user = userRepository.findByUserId(userId);
@@ -87,9 +118,9 @@ public class UserService {
         return updatedUser;
     }
 
-    public List<UserEntityResponse> getAllUsers(Long userId, Boolean activatedStatus){
+    public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<User> userList = new ArrayList<>();
-        List<UserEntityResponse> userResponseList;
+        List<UserResponse> userResponseList;
         if (userId == null){
             userList.add(userRepository.findByUserId(userId));
         } else if (Boolean.TRUE.equals(activatedStatus)) {
@@ -119,9 +150,9 @@ public class UserService {
         return roleId;
     }
 
-    private List<UserEntityResponse> assignUserResponseList(List<User> userList) {
-        List<UserEntityResponse> userResponseList = new ArrayList<>();
-        UserEntityResponse userResponse = new UserEntityResponse();
+    private List<UserResponse> assignUserResponseList(List<User> userList) {
+        List<UserResponse> userResponseList = new ArrayList<>();
+        UserResponse userResponse = new UserResponse();
         userList.forEach(userListObject ->{
             userResponse.setUserId(userListObject.getId());
             userResponse.setEmail(userListObject.getEmail());
