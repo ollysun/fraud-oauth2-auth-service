@@ -8,6 +8,7 @@ import com.etz.authorisationserver.entity.Role;
 import com.etz.authorisationserver.entity.RolePermission;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.entity.UserPermission;
+import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import com.etz.authorisationserver.repository.RolePermissionRepository;
 import com.etz.authorisationserver.repository.RoleRepository;
@@ -76,7 +77,7 @@ public class RoleService {
         List<Role> roleList = new ArrayList<>();
         List<RoleResponse> roleResponseList;
         if (roleId != null) {
-            roleList.add(roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("not found")));
+            roleList.add(roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("Role not found for id " + roleId)));
         } else if (Boolean.TRUE.equals(activatedStatus)) {
             roleList.addAll(roleRepository.findByStatus(true));
         } else {

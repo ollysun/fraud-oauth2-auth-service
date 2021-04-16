@@ -6,13 +6,13 @@ import com.etz.authorisationserver.dto.response.UserResponse;
 import com.etz.authorisationserver.entity.User;
 import com.etz.authorisationserver.entity.UserPermission;
 import com.etz.authorisationserver.entity.UserRole;
+import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +33,16 @@ public class UserService {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private UserRole userRole;
     private UserPermission userPermission;
 
 
     public UserResponse createUser(CreateUserRequest createUserRequest){
         createUserRequest.setStatus(Boolean.TRUE);
+        createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         User user = userRepository.save(createUserRequest);
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())){
             createUserRequest.getRoleId().forEach(roleId -> {
@@ -83,7 +87,7 @@ public class UserService {
     public List<String> getPermissionName(List<Long> permissionList){
         List<String> permissionNames = new ArrayList<>();
         permissionList.forEach(permissionId -> {
-            permissionNames.add(permissionRepository.findById(permissionId).get().getName());
+            permissionNames.add(permissionRepository.getOne(permissionId).getName());
         });
         return permissionNames;
     }
@@ -92,8 +96,9 @@ public class UserService {
     public User updateUser(UpdateUserRequest updateUserRequest, Long userId){
         User user = userRepository.findByUserId(userId);
         if (user == null){
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
+        updateUserRequest.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
         User updatedUser = userRepository.save(updateUserRequest);
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())){
