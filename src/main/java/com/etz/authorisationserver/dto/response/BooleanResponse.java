@@ -2,6 +2,7 @@ package com.etz.authorisationserver.dto.response;
 
 import com.etz.authorisationserver.util.RequestUtil;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
@@ -12,7 +13,7 @@ import lombok.*;
 public class BooleanResponse{
 
 
-	private Integer status;
+	private HttpStatus status;
     private String message;
 	private double execTime; 
 	private String error;
@@ -20,7 +21,7 @@ public class BooleanResponse{
     private Boolean data;
 
     public BooleanResponse(Object data) {
-    	setStatus(200);
+    	setStatus(HttpStatus.OK);
         setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
         setMessage(RequestUtil.getMessage());
         setData((Boolean) data);

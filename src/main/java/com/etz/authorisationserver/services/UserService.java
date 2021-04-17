@@ -2,10 +2,9 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
+import com.etz.authorisationserver.dto.response.UpdatedUserResponse;
 import com.etz.authorisationserver.dto.response.UserResponse;
-import com.etz.authorisationserver.entity.User;
-import com.etz.authorisationserver.entity.UserPermission;
-import com.etz.authorisationserver.entity.UserRole;
+import com.etz.authorisationserver.entity.*;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -36,15 +37,17 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private UserRole userRole;
-    private UserPermission userPermission;
 
 
     public UserResponse createUser(CreateUserRequest createUserRequest){
+        UserRole userRole = new UserRole();
+        UserPermission userPermission = new UserPermission();
+
         createUserRequest.setStatus(Boolean.TRUE);
         createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         User user = userRepository.save(createUserRequest);
-        if (Boolean.TRUE.equals(createUserRequest.getHasRole())){
+        if (Boolean.TRUE.equals(createUserRequest.getHasRole())
+                && !(createUserRequest.getRoleId().isEmpty())){
             createUserRequest.getRoleId().forEach(roleId -> {
                 userRole.setRoleId(roleId);
                 userRole.setUserId(user.getId());
@@ -53,13 +56,14 @@ public class UserService {
             });
         }
 
-        if (Boolean.TRUE.equals(createUserRequest.getHasPermission())){
-            for(Long permissionId : createUserRequest.getPermissions()){
+        if (Boolean.TRUE.equals(createUserRequest.getHasPermission())
+                && !(createUserRequest.getPermissions().isEmpty())){
+            createUserRequest.getPermissions().forEach(permissionId -> {
                 userPermission.setUserId(user.getId());
                 userPermission.setPermissionId(permissionId);
                 userPermission.setCreatedBy(createUserRequest.getCreatedBy());
                 userPermissionRepository.save(userPermission);
-            }
+            });
         }
         return outputUserResponse(user, createUserRequest);
     }
@@ -86,48 +90,95 @@ public class UserService {
     // get permissions Names
     public List<String> getPermissionName(List<Long> permissionList){
         List<String> permissionNames = new ArrayList<>();
-        permissionList.forEach(permissionId -> {
-            permissionNames.add(permissionRepository.getOne(permissionId).getName());
-        });
+        permissionList.forEach(permissionId -> permissionNames.add(permissionRepository.getOne(permissionId).getName()));
         return permissionNames;
     }
 
 
-    public User updateUser(UpdateUserRequest updateUserRequest, Long userId){
-        User user = userRepository.findByUserId(userId);
-        if (user == null){
-            throw new ResourceNotFoundException("User not found");
+    public Boolean updateUser(UpdateUserRequest updateUserRequest, Long userId){
+        UserRole newUserRole = new UserRole();
+        UserPermission userPermission = new UserPermission();
+        List<UserRole> newUserRoleList = new ArrayList<>();
+        List<UserPermission> newUserPermissionList = new ArrayList<>();
+        User user = new User();
+        if(userId != null) {
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Role Not found " + userId));
+            user.setUsername(updateUserRequest.getUsername());
+            user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+            user.setFirstName(updateUserRequest.getFirstName());
+            user.setLastName(updateUserRequest.getLastName());
+            user.setPhone(updateUserRequest.getPhone());
+            user.setEmail(updateUserRequest.getEmail());
+            user.setHasRole(updateUserRequest.getHasRole());
+            user.setHasPermission(updateUserRequest.getHasPermission());
+            user.setStatus(updateUserRequest.getStatus());
+            user.setUpdatedBy(updateUserRequest.getUpdatedBy());
         }
-        updateUserRequest.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
-        User updatedUser = userRepository.save(updateUserRequest);
+        User updatedUser = userRepository.save(user);
 
-        if (Boolean.TRUE.equals(updateUserRequest.getHasRole())){
+        if (Boolean.TRUE.equals(updateUserRequest.getHasRole())
+                && !(updateUserRequest.getRoleId().isEmpty())){
+
+            List<UserRole> previousUserRoleList = userRoleRepository.findUserById(updatedUser.getId());
             updateUserRequest.getRoleId().forEach(roleId -> {
-                userRole.setRoleId(roleId);
-                userRole.setUserId(userId);
-                userRole.setCreatedBy(updateUserRequest.getUpdatedBy());
-                userRoleRepository.save(userRole);
+                newUserRole.setRoleId(roleId);
+                newUserRole.setUserId(updatedUser.getId());
+                newUserRole.setCreatedBy(updateUserRequest.getUpdatedBy());
+                newUserRoleList.add(newUserRole);
             });
+            //remove duplicates
+            newUserRoleList.removeAll(previousUserRoleList);
+            previousUserRoleList.addAll(newUserRoleList);
+            userRoleRepository.saveAll(previousUserRoleList);
         }
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasPermission())
-                && !(updateUserRequest.getPermissions().isEmpty())){
+                && !(updateUserRequest.getPermissions().isEmpty())) {
+            List<UserPermission> previousUserPermissionList = userPermissionRepository.findByUserId(updatedUser.getId());
+
             updateUserRequest.getPermissions().forEach(permissionId -> {
                 userPermission.setUserId(updatedUser.getId());
                 userPermission.setPermissionId(permissionId);
                 userPermission.setUpdatedBy(updateUserRequest.getCreatedBy());
-                userPermissionRepository.save(userPermission);
+                newUserPermissionList.add(userPermission);
             });
 
+            //to remove duplicates
+            Set<UserPermission> setOfUserPermission = new LinkedHashSet<>(previousUserPermissionList);
+            setOfUserPermission.addAll(newUserPermissionList);
+            List<UserPermission> combinedList = new ArrayList<>(setOfUserPermission);
+            userPermissionRepository.saveAll(combinedList);
         }
-        return updatedUser;
+        return true;
+        //return outputUpdatedUserResponse(updatedUser, updateUserRequest);
+    }
+
+    private UpdatedUserResponse outputUpdatedUserResponse(User user, UpdateUserRequest updateUserRequest){
+        UpdatedUserResponse userResponse = new UpdatedUserResponse();
+        userResponse.setUserId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setStatus(user.getStatus());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        userResponse.setPhone(user.getPhone());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setHasRole(user.getHasRole());
+        userResponse.setRoleId(updateUserRequest.getRoleId());
+        userResponse.setHasPermission(user.getHasPermission());
+        userResponse.setPermissions(getPermissionName(updateUserRequest.getPermissions()));
+        userResponse.setUpdatedBy(user.getUpdatedBy());
+        userResponse.setUpdatedAt(user.getUpdatedAt());
+
+        return userResponse;
     }
 
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<User> userList = new ArrayList<>();
         List<UserResponse> userResponseList;
-        if (userId == null){
-            userList.add(userRepository.findByUserId(userId));
+        if (userId != null){
+            User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User Not found " + userId));
+            userList.add(user);
         } else if (Boolean.TRUE.equals(activatedStatus)) {
             userList.addAll(userRepository.findByStatus(true));
         }else{
@@ -140,25 +191,21 @@ public class UserService {
     private List<String> getUserPermissions(Long userId) {
         List<UserPermission> userPermissionList = userPermissionRepository.findByUserId(userId);
         List<String> permissionsList = new ArrayList<>();
-        userPermissionList.forEach(userPermissionListId ->{
-            permissionsList.add(permissionRepository.getOne(userPermissionListId.getPermissionId()).getName());
-        });
+        userPermissionList.forEach(userPermissionListId -> permissionsList.add(permissionRepository.getOne(userPermissionListId.getPermissionId()).getName()));
         return permissionsList;
     }
 
     private List<Long> getUserRoleId(Long userId) {
         List<UserRole> userRoleList = userRoleRepository.findUserById(userId);
         List<Long> roleId = new ArrayList<>();
-        userRoleList.forEach(userRoleId -> {
-            roleId.add(userRoleId.getRoleId());
-        });
+        userRoleList.forEach(userRoleId -> roleId.add(userRoleId.getRoleId()));
         return roleId;
     }
 
     private List<UserResponse> assignUserResponseList(List<User> userList) {
         List<UserResponse> userResponseList = new ArrayList<>();
         UserResponse userResponse = new UserResponse();
-        userList.forEach(userListObject ->{
+        userList.forEach((User userListObject) ->{
             userResponse.setUserId(userListObject.getId());
             userResponse.setEmail(userListObject.getEmail());
             userResponse.setFirstName(userListObject.getFirstName());

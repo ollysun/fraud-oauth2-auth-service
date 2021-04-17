@@ -1,11 +1,13 @@
 package com.etz.authorisationserver.dto.response;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 @Data
 public class RoleResponse implements Serializable {
     private Long roleId;

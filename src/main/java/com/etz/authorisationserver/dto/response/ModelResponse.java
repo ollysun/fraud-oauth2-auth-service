@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
@@ -13,7 +14,7 @@ import lombok.ToString;
 public class ModelResponse<T> {
 
 
-	private Integer status;
+	private HttpStatus status;
     private String message;
 	private double execTime; 
 	private String error;
@@ -21,7 +22,7 @@ public class ModelResponse<T> {
     private T data;
 
     public ModelResponse(T data) {
-    	setStatus(200);
+    	setStatus(HttpStatus.OK);
     	setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
         setMessage(RequestUtil.getMessage());
         setData(data);

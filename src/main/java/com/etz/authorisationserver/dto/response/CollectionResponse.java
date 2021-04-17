@@ -4,6 +4,7 @@ import com.etz.authorisationserver.util.RequestUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
 
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
 public class CollectionResponse<T> {
 
 
-	private Integer status;
+	private HttpStatus status;
     private String message;
 	private double execTime; 
 	private String error;
@@ -21,7 +22,7 @@ public class CollectionResponse<T> {
     private Collection<T> data;
 
     public CollectionResponse(Collection<T> result) {
-    	setStatus(200);
+    	setStatus(HttpStatus.OK);
         setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
         setMessage(RequestUtil.getMessage());
         setData(result);
