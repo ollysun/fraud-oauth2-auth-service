@@ -1,15 +1,12 @@
 package com.etz.authorisationserver.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 
-import java.util.Date;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class ExceptionResponse {
 
     private DateTime dateofError;

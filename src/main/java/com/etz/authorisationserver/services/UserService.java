@@ -57,8 +57,8 @@ public class UserService {
         }
 
         if (Boolean.TRUE.equals(createUserRequest.getHasPermission())
-                && !(createUserRequest.getPermissions().isEmpty())){
-            createUserRequest.getPermissions().forEach(permissionId -> {
+                && !(createUserRequest.getPermissionIds().isEmpty())){
+            createUserRequest.getPermissionIds().forEach(permissionId -> {
                 userPermission.setUserId(user.getId());
                 userPermission.setPermissionId(permissionId);
                 userPermission.setCreatedBy(createUserRequest.getCreatedBy());
@@ -80,7 +80,7 @@ public class UserService {
         userResponse.setHasRole(user.getHasRole());
         userResponse.setRoleId(createUserRequest.getRoleId());
         userResponse.setHasPermission(user.getHasPermission());
-        userResponse.setPermissions(getPermissionName(createUserRequest.getPermissions()));
+        userResponse.setPermissions(getPermissionName(createUserRequest.getPermissionIds()));
         userResponse.setCreatedBy(user.getCreatedBy());
         userResponse.setCreatedAt(user.getCreatedAt());
 
@@ -134,10 +134,10 @@ public class UserService {
         }
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasPermission())
-                && !(updateUserRequest.getPermissions().isEmpty())) {
+                && !(updateUserRequest.getPermissionIds().isEmpty())) {
             List<UserPermission> previousUserPermissionList = userPermissionRepository.findByUserId(updatedUser.getId());
 
-            updateUserRequest.getPermissions().forEach(permissionId -> {
+            updateUserRequest.getPermissionIds().forEach(permissionId -> {
                 userPermission.setUserId(updatedUser.getId());
                 userPermission.setPermissionId(permissionId);
                 userPermission.setUpdatedBy(updateUserRequest.getCreatedBy());
@@ -154,6 +154,8 @@ public class UserService {
         //return outputUpdatedUserResponse(updatedUser, updateUserRequest);
     }
 
+
+
     private UpdatedUserResponse outputUpdatedUserResponse(User user, UpdateUserRequest updateUserRequest){
         UpdatedUserResponse userResponse = new UpdatedUserResponse();
         userResponse.setUserId(user.getId());
@@ -166,7 +168,7 @@ public class UserService {
         userResponse.setHasRole(user.getHasRole());
         userResponse.setRoleId(updateUserRequest.getRoleId());
         userResponse.setHasPermission(user.getHasPermission());
-        userResponse.setPermissions(getPermissionName(updateUserRequest.getPermissions()));
+        userResponse.setPermissionIds(getPermissionName(updateUserRequest.getPermissionIds()));
         userResponse.setUpdatedBy(user.getUpdatedBy());
         userResponse.setUpdatedAt(user.getUpdatedAt());
 

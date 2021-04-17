@@ -43,7 +43,7 @@ public class CustomUserDetailService implements UserDetailsService {
         final List<String> permissions = new ArrayList<>();
         final List<Permission> collection = new ArrayList<>();
         for (final Role role : roles) {
-            collection.addAll(role.getPermissions());
+            collection.addAll(role.getRolePermissions());
         }
         for (final Permission item : collection) {
             permissions.add(item.getName());

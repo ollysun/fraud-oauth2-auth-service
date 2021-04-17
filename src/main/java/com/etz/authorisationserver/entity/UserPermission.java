@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user_permission")
@@ -16,15 +17,26 @@ import javax.persistence.*;
 public class UserPermission extends BaseEntity {
 
     @Id
-    @Column(name = "id", columnDefinition = "bigint")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id", columnDefinition = "bigint", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_USER_PERMISSION_ROLE_ID"))
+    @Column(name = "user_id", columnDefinition = "bigint")
     private Long userId;
 
-    @JoinColumn(name = "permission_id", columnDefinition = "bigint", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_USER_PERMISSION_PERMISSION_ID"))
+    @Column(name = "permission_id", columnDefinition = "bigint")
     private Long permissionId;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserPermission)) return false;
+        if (!super.equals(o)) return false;
+        UserPermission that = (UserPermission) o;
+        return userId.equals(that.userId) && permissionId.equals(that.permissionId);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(),  userId, permissionId);
+    }
 }

@@ -6,7 +6,10 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -54,16 +57,22 @@ public class User extends BaseEntity implements Serializable {
 	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;
 
-	@ManyToMany
-	@JoinTable(name = "user_role",
-			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	@ToString.Exclude
-	private List<Role> roles;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@JoinTable(name = "user_role",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private List<Role> roles = new ArrayList<>();
+
 
 	@ToString.Exclude
-	@OneToMany(mappedBy = "user")
-	private List<UserPermission> userPermissions;
+	@ManyToMany
+	@JoinTable(
+			name = "user_permission",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "permission_id")
+	)
+	private List<Permission> permissions = new ArrayList<>();
 
 	@Override
 	public boolean equals(Object o) {

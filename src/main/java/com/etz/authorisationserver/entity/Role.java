@@ -31,17 +31,19 @@ public class Role extends BaseEntity implements Serializable {
     private Boolean status;
 
     @ToString.Exclude
-    @ManyToMany(mappedBy = "roles")
-    private Collection<User> users;
+    @ManyToMany(mappedBy = "roles", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<User> users = new ArrayList<>();
 
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "role_permission",
-            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "role_id",
+                    nullable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "permission_id",
+                    nullable = false, updatable = false)
     )
-    private List<Permission> permissions;
+    private List<Permission> rolePermissions = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
@@ -49,11 +51,11 @@ public class Role extends BaseEntity implements Serializable {
         if (!(o instanceof Role)) return false;
         if (!super.equals(o)) return false;
         Role role = (Role) o;
-        return id.equals(role.id) && Objects.equals(name, role.name) && description.equals(role.description) && status.equals(role.status) && users.equals(role.users) && permissions.equals(role.permissions);
+        return id.equals(role.id) && Objects.equals(name, role.name) && description.equals(role.description) && status.equals(role.status) && users.equals(role.users) && rolePermissions.equals(role.rolePermissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, description, status, users, permissions);
+        return Objects.hash(super.hashCode(), id, name, description, status, users, rolePermissions);
     }
 }

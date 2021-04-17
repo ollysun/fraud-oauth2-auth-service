@@ -51,16 +51,16 @@ INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (1,1);
 INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (2,1);
 INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (2,2);
 
-/* Insert Data into RolePermission Table  */
-insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,1);
-insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,2);
-insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,3);
-insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,1);
 
 /* Insert Data into UserPermission Table  */
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,1);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(2,2);
 
+/* Insert Data into RolePermission Table  */
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,1);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,2);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,3);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,1);
 
 
 

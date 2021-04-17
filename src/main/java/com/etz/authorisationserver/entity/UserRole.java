@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -12,12 +13,8 @@ import java.io.Serializable;
 @ToString
 @RequiredArgsConstructor
 @Table(name = "user_role")
-public class UserRole extends BaseEntity implements Serializable
-{
-    private static final long serialVersionUID = -6952935229225959482L;
-
+public class UserRole extends BaseEntity implements Serializable {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -30,14 +27,14 @@ public class UserRole extends BaseEntity implements Serializable
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (!(o instanceof UserRole)) return false;
+        if (!super.equals(o)) return false;
         UserRole userRole = (UserRole) o;
-
-        return id != null && id.equals(userRole.id);
+        return userId.equals(userRole.userId) && roleId.equals(userRole.roleId);
     }
 
     @Override
     public int hashCode() {
-        return 1195449715;
+        return Objects.hash(super.hashCode(), userId, roleId);
     }
 }

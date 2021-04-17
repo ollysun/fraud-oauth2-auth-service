@@ -12,6 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Data
 public class UpdateUserRequest extends User {
     private List<Long> roleId;
-    private List<Long> permissions;
+    private List<Long> permissionIds;
 }
 

@@ -7,11 +7,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "role_permission")
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Table(name = "role_permission")
 public class RolePermission extends BaseEntity implements Serializable {
 
     @Id
@@ -30,11 +30,11 @@ public class RolePermission extends BaseEntity implements Serializable {
         if (!(o instanceof RolePermission)) return false;
         if (!super.equals(o)) return false;
         RolePermission that = (RolePermission) o;
-        return id.equals(that.id) && roleId.equals(that.roleId) && permissionId.equals(that.permissionId);
+        return roleId.equals(that.roleId) && permissionId.equals(that.permissionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, roleId, permissionId);
+        return Objects.hash(super.hashCode(), roleId, permissionId);
     }
 }

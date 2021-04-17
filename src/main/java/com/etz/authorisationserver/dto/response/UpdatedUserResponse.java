@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class UpdatedUserResponse extends User {
     private Long userId;
-    private List<String> permissions;
+    private List<String> permissionIds;
     private List<Long> roleId;
 }
 

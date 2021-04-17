@@ -9,5 +9,5 @@ import java.util.List;
 @Data
 public class CreateUserRequest extends User {
     private List<Long> roleId;
-    private List<Long> permissions;
+    private List<Long> permissionIds;
 }
