@@ -14,13 +14,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Slf4j
 @Configuration
@@ -45,13 +44,6 @@ public class AuthorisationServerConfig
         this.jdbcTokenStores = jdbcTokenStores;
     }
 
-//    @Bean
-//    public JdbcTokenStore tokenStore() {
-//        return new JdbcTokenStore(Objects.requireNonNull(jdbcTemplate.getDataSource()));
-//    }
-
-
-
     @Bean
     @Primary
     public DefaultTokenServices tokenServices(final TokenStore tokenStore,
@@ -66,23 +58,9 @@ public class AuthorisationServerConfig
 
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-//        KeyStoreKeyFactory keyStoreKeyFactory =
-//                new KeyStoreKeyFactory(
-//                        new ClassPathResource("auth.jks"),"auth123".toCharArray());
-//          jwtAccessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("auth"));
-//        return jwtAccessTokenConverter;
-
-//        ClassPathResource ksFile =
-//                new ClassPathResource("auth.jks");
-//        KeyStoreKeyFactory ksFactory =
-//                new KeyStoreKeyFactory(ksFile, "auth123".toCharArray());
-//        KeyPair keyPair = ksFactory.getKeyPair("auth");
-//        jwtAccessTokenConverter.setKeyPair(keyPair);
-//        return jwtAccessTokenConverter;
-
-        jwtAccessTokenConverter.setSigningKey("secret");
-        return jwtAccessTokenConverter;
+        CustomTokenConverter tokenConverter = new CustomTokenConverter();
+        tokenConverter.setSigningKey("PswMapview2017");
+        return tokenConverter;
     }
 
     @Override
@@ -93,7 +71,7 @@ public class AuthorisationServerConfig
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
-        enhancerChain.setTokenEnhancers(Arrays.asList(jwtAccessTokenConverter()));
+        enhancerChain.setTokenEnhancers(Collections.singletonList(jwtAccessTokenConverter()));
         endpoints.authenticationManager(authenticationManager)
                 .accessTokenConverter(jwtAccessTokenConverter())
                 .userDetailsService(userDetailsService)
@@ -110,11 +88,5 @@ public class AuthorisationServerConfig
                 .checkTokenAccess("isAuthenticated()");
     }
 
-//    private KeyPair keyPair(SecurityProperties.JwtProperties jwtProperties, KeyStoreKeyFactory keyStoreKeyFactory) {
-//        return keyStoreKeyFactory.getKeyPair(jwtProperties.getKeyPairAlias(), jwtProperties.getKeyPairPassword().toCharArray());
-//    }
-//
-//    private KeyStoreKeyFactory keyStoreKeyFactory(SecurityProperties.JwtProperties jwtProperties) {
-//        return new KeyStoreKeyFactory(jwtProperties.getKeyStore(), jwtProperties.getKeyStorePassword().toCharArray());
-//    }
+
 }
