@@ -25,6 +25,7 @@ public class RoleController {
     public ResponseEntity<ModelResponse<RoleResponse>> createRole(@RequestBody @Valid CreateRoleRequest request){
         ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.createRole(request));
         response.setStatus(HttpStatus.CREATED);
+        response.setMessage("Role Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

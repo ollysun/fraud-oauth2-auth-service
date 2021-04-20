@@ -8,6 +8,7 @@ import com.etz.authorisationserver.entity.*;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,14 +39,23 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
 
-
     public UserResponse createUser(CreateUserRequest createUserRequest){
         UserRole userRole = new UserRole();
         UserPermission userPermission = new UserPermission();
-
         createUserRequest.setStatus(Boolean.TRUE);
         createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
-        User user = userRepository.save(createUserRequest);
+
+        User userRequest = new User();
+        userRequest.setFirstName(createUserRequest.getFirstname());
+        userRequest.setPassword(createUserRequest.getPassword());
+        userRequest.setUsername(createUserRequest.getUsername());
+        userRequest.setLastName(createUserRequest.getLastname());
+        userRequest.setStatus(createUserRequest.getStatus());
+        userRequest.setPhone(createUserRequest.getPhone());
+        userRequest.setEmail(createUserRequest.getEmail());
+        userRequest.setCreatedBy(createUserRequest.getCreatedBy());
+        User user = userRepository.save(userRequest);
+        log.info(user.toString());
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())
                 && !(createUserRequest.getRoleId().isEmpty())){
             createUserRequest.getRoleId().forEach(roleId -> {
@@ -68,6 +78,7 @@ public class UserService {
         return outputUserResponse(user, createUserRequest);
     }
 
+
     private UserResponse outputUserResponse(User user, CreateUserRequest createUserRequest){
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(user.getId());
@@ -80,10 +91,10 @@ public class UserService {
         userResponse.setHasRole(user.getHasRole());
         userResponse.setRoleId(createUserRequest.getRoleId());
         userResponse.setHasPermission(user.getHasPermission());
-        userResponse.setPermissions(getPermissionName(createUserRequest.getPermissionIds()));
+        userResponse.setPermissionNames(getPermissionName(createUserRequest.getPermissionIds()));
         userResponse.setCreatedBy(user.getCreatedBy());
         userResponse.setCreatedAt(user.getCreatedAt());
-
+        userResponse.setOptLock(user.getVersion());
         return userResponse;
     }
 
@@ -186,7 +197,7 @@ public class UserService {
         }else{
             userList = userRepository.findAll();
         }
-        userResponseList= assignUserResponseList(userList);
+        userResponseList = assignUserResponseList(userList);
         return userResponseList;
     }
 
@@ -206,8 +217,8 @@ public class UserService {
 
     private List<UserResponse> assignUserResponseList(List<User> userList) {
         List<UserResponse> userResponseList = new ArrayList<>();
-        UserResponse userResponse = new UserResponse();
-        userList.forEach((User userListObject) ->{
+        for (User userListObject : userList) {
+            UserResponse userResponse = new UserResponse();
             userResponse.setUserId(userListObject.getId());
             userResponse.setEmail(userListObject.getEmail());
             userResponse.setFirstName(userListObject.getFirstName());
@@ -216,13 +227,14 @@ public class UserService {
             userResponse.setHasRole(userListObject.getHasRole());
             userResponse.setPhone(userListObject.getPhone());
             userResponse.setRoleId(getUserRoleId(userListObject.getId()));
-            userResponse.setPermissions(getUserPermissions(userListObject.getId()));
+            userResponse.setPermissionNames(getUserPermissions(userListObject.getId()));
             userResponse.setStatus(userListObject.getStatus());
             userResponse.setUserName(userListObject.getUsername());
             userResponse.setCreatedBy(userListObject.getCreatedBy());
             userResponse.setCreatedAt(userListObject.getCreatedAt());
+            userResponse.setOptLock(userListObject.getVersion());
             userResponseList.add(userResponse);
-        });
+        }
         return userResponseList;
     }
 

@@ -59,7 +59,7 @@ public class AuthorisationServerConfig
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         CustomTokenConverter tokenConverter = new CustomTokenConverter();
-        tokenConverter.setSigningKey("PswMapview2017");
+        tokenConverter.setSigningKey("AuthETransactNgView2021");
         return tokenConverter;
     }
 

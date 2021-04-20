@@ -1,13 +1,20 @@
 package com.etz.authorisationserver.dto.request;
-import com.etz.authorisationserver.entity.User;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
+import java.io.Serializable;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class CreateUserRequest extends User {
+public class CreateUserRequest implements Serializable {
+    private String username;
+    private String password;
+    private String firstname;
+    private String lastname;
+    private String phone;
+    private String email;
+    private Boolean hasRole;
+    private Boolean status;
+    private Boolean hasPermission;
     private List<Long> roleId;
     private List<Long> permissionIds;
+    private String createdBy;
 }

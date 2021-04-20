@@ -4,12 +4,14 @@ import lombok.Getter;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Getter
 public class ExceptionResponse {
 
-    private DateTime dateofError;
+    private LocalDateTime dateofError;
     private String message;
     private HttpStatus status;
     private List<String> errors;
@@ -18,7 +20,7 @@ public class ExceptionResponse {
         super();
     }
 
-    public ExceptionResponse(DateTime dateofError, String message, HttpStatus status, List<String> errors) {
+    public ExceptionResponse(LocalDateTime dateofError, String message, HttpStatus status, List<String> errors) {
         super();
         this.dateofError = dateofError;
         this.message = message;
@@ -26,7 +28,7 @@ public class ExceptionResponse {
         this.errors = errors;
     }
 
-    public ExceptionResponse(DateTime dateofError, String message, HttpStatus status) {
+    public ExceptionResponse(LocalDateTime dateofError, String message, HttpStatus status) {
         this.dateofError = dateofError;
         this.message = message;
         this.status = status;

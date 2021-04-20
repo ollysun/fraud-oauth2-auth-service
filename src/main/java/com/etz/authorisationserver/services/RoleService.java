@@ -37,12 +37,14 @@ public class RoleService {
         role.setStatus(Boolean.TRUE);
         role.setCreatedBy(createRoleRequest.getCreatedBy());
         Role createdRole = roleRepository.save(role);
-        createRoleRequest.getPermissionList().forEach(permissionId -> {
-            rolePermission.setRoleId(createdRole.getId());
-            rolePermission.setPermissionId(permissionId);
-            rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
-            rolePermissionRepository.save(rolePermission);
-        });
+        if(!(createRoleRequest.getPermissionList().isEmpty())) {
+            for (Long permissionId : createRoleRequest.getPermissionList()) {
+                rolePermission.setRoleId(createdRole.getId());
+                rolePermission.setPermissionId(permissionId);
+                rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
+                rolePermissionRepository.save(rolePermission);
+            }
+        }
 
         return RoleResponse.builder()
                                     .roleId(role.getId())

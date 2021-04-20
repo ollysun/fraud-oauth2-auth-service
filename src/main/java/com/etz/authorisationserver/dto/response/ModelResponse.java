@@ -23,8 +23,8 @@ public class ModelResponse<T> {
 
     public ModelResponse(T data) {
     	setStatus(HttpStatus.OK);
-    	setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
-        setMessage(RequestUtil.getMessage());
+    	//setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
+        //setMessage(RequestUtil.getMessage());
         setData(data);
     }
 }

@@ -21,7 +21,7 @@ public class Role extends BaseEntity implements Serializable {
     @Column(name = "id", columnDefinition = "bigint")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, length = 200)
     private String name;
 
     @Column(name = "description")

@@ -30,15 +30,15 @@ VALUES('user','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'm
 
 INSERT INTO user(username, password,  first_name, last_name, phone, email, status)
 VALUES('admin','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'moses',
-       'olalere','08067657890','olalere.moses@etranzactng.com', 1);
+       'olalere','08067657890','olalere.moses2@etranzactng.com', 1);
 
 /* Insert Data into Role Table  */
 insert into authorisation_service.role(name, description, status) values('ROLE_USER', 'user role', 1);
 insert into authorisation_service.role(name, description, status) values('ROLE_ADMIN', 'admin role', 1);
-insert into authorisation_service.role(name, description, status) values('ROLE_USER', 'api role',1);
 insert into authorisation_service.role(name, description, status) values('ROLE_DBA', 'dba role', 1 );
 insert into authorisation_service.role(name, description, status) values('ROLE_SELLER', 'seller role', 1);
 insert into authorisation_service.role(name, description, status) values('ROLE_BUYER', 'buyer role', 1);
+
 
 
 /* Insert Data into Privilege Table  */

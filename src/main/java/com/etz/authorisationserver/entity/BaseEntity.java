@@ -1,9 +1,11 @@
 package com.etz.authorisationserver.entity;
 
-import com.etz.authorisationserver.util.RequestContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,7 +13,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import org.joda.time.DateTime;
 
 
 @Getter
@@ -20,13 +21,16 @@ import org.joda.time.DateTime;
 @MappedSuperclass
 public class BaseEntity implements Serializable {
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @NotBlank(message = "Please enter the name of the creator")
     @Column(name = "created_by")
     private String createdBy;
- 
+
+    @UpdateTimestamp
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
  
@@ -37,43 +41,8 @@ public class BaseEntity implements Serializable {
      * The entity instance version used for optimistic locking.
      */
     @Version
-    private Integer version;
-
-    @PrePersist
-    public void beforePersist() {
-        String username = RequestContext.getUsername();
-        if (username == null) {
-            throw new IllegalArgumentException(
-                    "Cannot persist a TransactionalEntity without a username "
-                            + "in the RequestContext for this thread.");
-        }
-        setCreatedBy(username);
-
-        LocalDateTime today = LocalDateTime.now();
-        setCreatedAt(today);
-    }
-
-    /**
-     * A listener method which is invoked on instances of TransactionalEntity
-     * (or their subclasses) prior to being updated. Sets the
-     * <code>updated</code> audit values for the entity. Attempts to obtain this
-     * thread's instance of username from the RequestContext. If none exists,
-     * throws an IllegalArgumentException. The username is used to set the
-     * <code>updatedBy</code> value. The <code>updatedAt</code> value is set to
-     * the current timestamp.
-     */
-    @PreUpdate
-    public void beforeUpdate() {
-        String username = RequestContext.getUsername();
-        if (username == null) {
-            throw new IllegalArgumentException(
-                    "Cannot update a TransactionalEntity without a username "
-                            + "in the RequestContext for this thread.");
-        }
-        setUpdatedBy(username);
-        LocalDateTime today = LocalDateTime.now();
-        setUpdatedAt(today);
-    }
+    @Column(name = "version", columnDefinition = "bigint DEFAULT 0", nullable = false)
+    private Long version = 0L;
 
     @Override
     public boolean equals(Object o) {

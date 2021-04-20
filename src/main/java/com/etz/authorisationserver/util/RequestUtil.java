@@ -90,7 +90,8 @@ public class RequestUtil {
     }
 
     public static long getStartTime() {
-        return (Long) getRequest().getAttribute("start_time");
+        //return (Long) getRequest().getAttribute("start_time");
+        return (Long) System.nanoTime();
     }
     
     public static String getSourceURL() {

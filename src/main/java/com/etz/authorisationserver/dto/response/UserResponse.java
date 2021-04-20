@@ -1,13 +1,14 @@
 package com.etz.authorisationserver.dto.response;
-
-import com.etz.authorisationserver.entity.User;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class UserResponse {
+public class UserResponse implements Serializable {
     private Long userId;
     private String userName;
     private String firstName;
@@ -17,8 +18,9 @@ public class UserResponse {
     private Boolean hasRole;
     private List<Long> roleId;
     private Boolean hasPermission;
-    private List<String> permissions;
+    private List<String> permissionNames;
     private Boolean status;
     private String createdBy;
     private LocalDateTime createdAt;
+    private Long optLock;
 }

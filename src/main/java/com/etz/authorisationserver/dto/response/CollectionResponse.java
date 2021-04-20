@@ -22,9 +22,9 @@ public class CollectionResponse<T> {
     private Collection<T> data;
 
     public CollectionResponse(Collection<T> result) {
-    	setStatus(HttpStatus.OK);
-        setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
-        setMessage(RequestUtil.getMessage());
         setData(result);
+        setStatus(HttpStatus.OK);
+        //setMessage(RequestUtil.getMessage());
+        //setExecTime((System.nanoTime() - RequestUtil.getStartTime())/1000000);
     }
 }

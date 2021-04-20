@@ -1,7 +1,10 @@
 package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
+import com.etz.authorisationserver.dto.response.PermissionResponse;
+import com.etz.authorisationserver.dto.response.RoleResponse;
 import com.etz.authorisationserver.entity.Permission;
+import com.etz.authorisationserver.entity.Role;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,7 @@ public class PermissionService {
     @Autowired
     private PermissionRepository iPermissionRepository;
 
-    public List<Permission> getAllPermissions(Long permissionId, Boolean activatedStatus) {
+    public List<PermissionResponse> getAllPermissions(Long permissionId, Boolean activatedStatus) {
         List<Permission> permissionList = new ArrayList<>();
         if (permissionId != null){
             Permission permission = iPermissionRepository.findById(permissionId)
@@ -29,10 +32,38 @@ public class PermissionService {
         }else{
             permissionList = iPermissionRepository.findAll();
         }
-        return permissionList;
+        return getPermissionResponse(permissionList);
     }
 
-    public Permission createPermission(CreatePermissionRequest createPermissionRequest) {
-        return iPermissionRepository.save(createPermissionRequest);
+    private List<PermissionResponse> getPermissionResponse(List<Permission> permissionList){
+        List<PermissionResponse> permissionResponseList = new ArrayList<>();
+        permissionList.forEach(permissionListObject -> {
+            PermissionResponse permissionResponse = PermissionResponse.builder()
+                    .permissionId(permissionListObject.getId())
+                    .name(permissionListObject.getName())
+                    .status(permissionListObject.getStatus())
+                    .createdBy(permissionListObject.getCreatedBy())
+                    .createdAt(permissionListObject.getCreatedAt())
+                    .build();
+            permissionResponseList.add(permissionResponse);
+        });
+        return permissionResponseList;
+    }
+
+    public PermissionResponse createPermission(CreatePermissionRequest createPermissionRequest) {
+        Permission permission = new Permission();
+        permission.setName(createPermissionRequest.getName());
+        permission.setStatus(Boolean.TRUE);
+        permission.setCreatedBy(createPermissionRequest.getCreatedBy());
+
+        Permission createPermission = iPermissionRepository.save(permission);
+
+        return PermissionResponse.builder()
+                    .permissionId(createPermission.getId())
+                    .name(createPermission.getName())
+                    .status(createPermission.getStatus())
+                    .createdBy(createPermission.getCreatedBy())
+                    .createdAt(createPermission.getCreatedAt())
+                    .build();
     }
 }

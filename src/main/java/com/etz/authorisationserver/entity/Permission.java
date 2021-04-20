@@ -20,7 +20,7 @@ public class Permission extends BaseEntity{
     @Column(name = "id", columnDefinition = "bigint")
     private long id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, length = 200)
     private String name;
 
     @Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)

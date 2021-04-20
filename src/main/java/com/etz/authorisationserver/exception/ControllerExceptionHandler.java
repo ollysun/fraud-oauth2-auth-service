@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,21 +22,30 @@ import java.util.List;
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private LocalDateTime todayDate = LocalDateTime.now();
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                new DateTime(),ex.getMessage(), HttpStatus.NOT_FOUND, details);
+                todayDate,ex.getMessage(), HttpStatus.NOT_FOUND, details);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleException(DataIntegrityViolationException ex){
         List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
+        details.add(ex.getMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                new DateTime(), "Data Integrity Violation",HttpStatus.CONFLICT,details);
+                todayDate, "Data Integrity Violation or Duplicate Entry",HttpStatus.CONFLICT,null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<Object> handleException(DuplicateKeyException ex){
+        final ExceptionResponse exceptionResponse = new ExceptionResponse(
+                todayDate, "Similar Record already exist",HttpStatus.CONFLICT,null);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
     }
 
@@ -44,19 +54,9 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                new DateTime(), ex.getMessage(), HttpStatus.UNAUTHORIZED,
+                todayDate, ex.getMessage(), HttpStatus.UNAUTHORIZED,
                  details);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<Object> handleException(DuplicateKeyException ex){
-        List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
-        final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                new DateTime(),
-                "Similar record already exist",HttpStatus.CONFLICT,details);
-        return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
@@ -64,7 +64,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                new DateTime(), "Something went wrong while trying to process your request",
+                todayDate, "Something went wrong while trying to process your request",
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 details);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,7 +76,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                 new DateTime(), ex.getMessage(),HttpStatus.BAD_REQUEST,
+                 todayDate, ex.getMessage(),HttpStatus.BAD_REQUEST,
                 details);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
@@ -93,7 +93,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
             errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
         }
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                new DateTime(), null,HttpStatus.BAD_REQUEST,
+                todayDate, null,HttpStatus.BAD_REQUEST,
                 errors);
         return handleExceptionInternal(ex, exceptionResponse, headers, exceptionResponse.getStatus(), request);
 

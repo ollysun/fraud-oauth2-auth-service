@@ -1,15 +1,14 @@
 package com.etz.authorisationserver.entity;
 
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -18,17 +17,18 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank(message = "User number cannot be empty")
-	@Column(name = "username")
+	@NotBlank(message = "User name cannot be empty")
+	@Column(name = "username", unique = true, length = 250)
 	private String username;
 
-	@NotBlank(message = "User name cannot be empty")
-	@Column(name = "password", columnDefinition = "TEXT",nullable = false)
+	@NotBlank(message = "Password cannot be empty")
+	@Column(name = "password", columnDefinition = "TEXT",nullable = false, unique = true)
 	private String password;
 
 	@NotBlank(message = "First name cannot be empty")
@@ -40,19 +40,19 @@ public class User extends BaseEntity implements Serializable {
 	private String lastName;
 
 	@NotBlank(message = "Phone cannot be empty")
-	@Column(name = "phone")
+	@Column(name = "phone", unique = true, length = 200)
 	private String phone;
 
 	@Email(message="please enter valid email")
 	@NotBlank(message = "email cannot be empty")
-	@Column(name = "email")
+	@Column(name = "email", unique = true, length = 250)
 	private String email;
 
-	@Column( name = "has_Role", columnDefinition = "TINYINT", length = 1)
+	@Column( name = "has_Role", columnDefinition = "TINYINT default true", length = 1, nullable = false)
 	private Boolean hasRole = Boolean.TRUE;
 
-	@Column(name = "has_Permission", columnDefinition = "TINYINT", length = 1)
-	private Boolean hasPermission = Boolean.FALSE;
+	@Column(name = "has_Permission", columnDefinition = "TINYINT default true", length = 1, nullable = false)
+	private Boolean hasPermission = Boolean.TRUE;
 
 	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;
