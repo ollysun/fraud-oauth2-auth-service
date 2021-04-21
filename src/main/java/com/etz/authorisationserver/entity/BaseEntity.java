@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -25,7 +24,6 @@ public class BaseEntity implements Serializable {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @NotBlank(message = "Please enter the name of the creator")
     @Column(name = "created_by")
     private String createdBy;
 

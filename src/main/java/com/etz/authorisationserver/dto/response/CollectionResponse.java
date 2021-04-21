@@ -14,7 +14,7 @@ import java.util.Collection;
 public class CollectionResponse<T> {
 
 
-	private HttpStatus status;
+	private Integer status;
     private String message;
 	private double execTime; 
 	private String error;
@@ -23,7 +23,7 @@ public class CollectionResponse<T> {
 
     public CollectionResponse(Collection<T> result) {
         setData(result);
-        setStatus(HttpStatus.OK);
+        setStatus(HttpStatus.OK.value());
         //setMessage(RequestUtil.getMessage());
         //setExecTime((System.nanoTime() - RequestUtil.getStartTime())/1000000);
     }

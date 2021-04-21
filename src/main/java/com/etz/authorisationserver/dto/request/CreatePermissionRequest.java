@@ -1,12 +1,15 @@
 package com.etz.authorisationserver.dto.request;
 
-import com.etz.authorisationserver.entity.Permission;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
+import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+
 @Data
-@JsonIgnoreProperties({ "updatedBy", "updatedAt" })
-public class CreatePermissionRequest extends Permission {
+public class CreatePermissionRequest implements Serializable {
+    @NotBlank(message="Please provide the permission name")
+    private String name;
+
+    @NotBlank(message="Please provide the name of the creator")
+    private String createdBy;
 }

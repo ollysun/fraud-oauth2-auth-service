@@ -24,7 +24,7 @@ public class RoleController {
     @PostMapping
     public ResponseEntity<ModelResponse<RoleResponse>> createRole(@RequestBody @Valid CreateRoleRequest request){
         ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.createRole(request));
-        response.setStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED.value());
         response.setMessage("Role Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -38,13 +38,12 @@ public class RoleController {
         return new ResponseEntity<>(collectionResponse, HttpStatus.OK);
     }
 
-    @PutMapping(path = "/{roleId}")
-    public ResponseEntity<StringResponse> updateRole(@PathVariable(name = "roleId") Long roleId,
-                                                     @RequestBody @Valid UpdateRoleRequest request){
+    @PutMapping
+    public ResponseEntity<StringResponse> updateRole(@RequestBody @Valid UpdateRoleRequest request){
         StringResponse result = new StringResponse();
-        Boolean boolVal = roleService.updateRole(request, roleId);
+        Boolean boolVal = roleService.updateRole(request);
         if(Boolean.TRUE.equals(boolVal)){
-            result.setData("Role Updated");
+            result.setMessage("Role Updated");
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 public class ModelResponse<T> {
 
 
-	private HttpStatus status;
+	private Integer status;
     private String message;
 	private double execTime; 
 	private String error;
@@ -22,7 +22,7 @@ public class ModelResponse<T> {
     private T data;
 
     public ModelResponse(T data) {
-    	setStatus(HttpStatus.OK);
+    	setStatus(HttpStatus.OK.value());
     	//setExecTime((System.nanoTime() - RequestUtil.getStartTime()) / 100000000);
         //setMessage(RequestUtil.getMessage());
         setData(data);

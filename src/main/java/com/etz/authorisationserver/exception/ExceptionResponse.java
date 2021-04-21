@@ -1,17 +1,15 @@
 package com.etz.authorisationserver.exception;
 
 import lombok.Getter;
-import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 @Getter
 public class ExceptionResponse {
 
-    private LocalDateTime dateofError;
+    private LocalDateTime timeStamp;
     private String message;
     private HttpStatus status;
     private List<String> errors;
@@ -22,14 +20,14 @@ public class ExceptionResponse {
 
     public ExceptionResponse(LocalDateTime dateofError, String message, HttpStatus status, List<String> errors) {
         super();
-        this.dateofError = dateofError;
+        this.timeStamp = dateofError;
         this.message = message;
         this.status = status;
         this.errors = errors;
     }
 
     public ExceptionResponse(LocalDateTime dateofError, String message, HttpStatus status) {
-        this.dateofError = dateofError;
+        this.timeStamp = dateofError;
         this.message = message;
         this.status = status;
     }

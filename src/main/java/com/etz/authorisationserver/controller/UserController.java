@@ -26,7 +26,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ModelResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest request){
         ModelResponse<UserResponse> response = new ModelResponse<>(userService.createUser(request));
-        response.setStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED.value());
         response.setMessage("User Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -42,13 +42,12 @@ public class UserController {
         return new ResponseEntity<>(collectionResponse, HttpStatus.OK);
     }
 
-    @PutMapping(path = "/{userId}")
-    public ResponseEntity<StringResponse> updateUser(@PathVariable(name = "userid") Long userid,
-                                                                         @RequestBody @Valid UpdateUserRequest request){
+    @PutMapping
+    public ResponseEntity<StringResponse> updateUser(@RequestBody @Valid UpdateUserRequest request){
         StringResponse result = new StringResponse();
-        Boolean boolVal = userService.updateUser(request, userid);
+        Boolean boolVal = userService.updateUser(request);
         if(Boolean.TRUE.equals(boolVal)){
-            result.setData("User Updated");
+            result.setMessage("User Updated");
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

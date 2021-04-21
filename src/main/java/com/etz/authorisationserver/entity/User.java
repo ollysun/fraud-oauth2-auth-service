@@ -4,8 +4,6 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,28 +21,22 @@ public class User extends BaseEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank(message = "User name cannot be empty")
 	@Column(name = "username", unique = true, length = 250)
 	private String username;
 
-	@NotBlank(message = "Password cannot be empty")
 	@Column(name = "password", columnDefinition = "TEXT",nullable = false, unique = true)
 	private String password;
 
-	@NotBlank(message = "First name cannot be empty")
 	@Column(name = "first_name")
 	private String firstName;
 
-	@NotBlank(message = "Last name cannot be empty")
 	@Column(name = "last_name")
 	private String lastName;
 
-	@NotBlank(message = "Phone cannot be empty")
 	@Column(name = "phone", unique = true, length = 200)
 	private String phone;
 
-	@Email(message="please enter valid email")
-	@NotBlank(message = "email cannot be empty")
+
 	@Column(name = "email", unique = true, length = 250)
 	private String email;
 

@@ -36,7 +36,7 @@ public class PermissionController {
     @PostMapping
     public ResponseEntity<ModelResponse<PermissionResponse>> createPermission(@RequestBody @Valid CreatePermissionRequest request){
         ModelResponse<PermissionResponse> response = new ModelResponse<>(permissionService.createPermission(request));
-        response.setStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED.value());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

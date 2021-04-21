@@ -63,13 +63,13 @@ public class RoleService {
         return permissionNameList;
     }
 
-    public Boolean updateRole(UpdateRoleRequest updateRoleRequest, Long roleId) {
+    public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
         RolePermission rolePermission = new RolePermission();
         List<RolePermission> newRolePermissionList = new ArrayList<>();
         Role roleOptional = new Role();
-        if(roleId != null) {
-            roleOptional = roleRepository.findById(roleId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Role Not found " + roleId));
+        if(updateRoleRequest.getRoleId() != null) {
+            roleOptional = roleRepository.findById(updateRoleRequest.getRoleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Role Not found " + updateRoleRequest.getRoleId()));
 
             roleOptional.setName(updateRoleRequest.getRoleName());
             roleOptional.setDescription(updateRoleRequest.getDescription());
@@ -78,7 +78,7 @@ public class RoleService {
         }
         Role updatedRole =  roleRepository.save(roleOptional);
 
-        List<RolePermission> previousRolePermissionList = rolePermissionRepository.findByRoleId(roleId);
+        List<RolePermission> previousRolePermissionList = rolePermissionRepository.findByRoleId(updatedRole.getId());
         updateRoleRequest.getPermissions().forEach(rolePermissionObject ->{
             rolePermission.setRoleId(updatedRole.getId());
             rolePermission.setPermissionId(rolePermissionObject);

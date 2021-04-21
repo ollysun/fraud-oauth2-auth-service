@@ -1,6 +1,6 @@
 package com.etz.authorisationserver.exception;
 
-import org.joda.time.DateTime;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
@@ -12,17 +12,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @ControllerAdvice
-public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
+public class ControllerExceptionHandler  {
 
-    private LocalDateTime todayDate = LocalDateTime.now();
+    private final LocalDateTime todayDate = LocalDateTime.now();
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
@@ -33,12 +33,29 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<Object> handleException(MethodArgumentNotValidException ex) {
+
+        final List<String> errors = new ArrayList<>();
+        for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.add(error.getField() + ": " + error.getDefaultMessage());
+        }
+        for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
+        final ExceptionResponse exceptionResponse = new ExceptionResponse(
+                todayDate, "Parameters Not Valid",HttpStatus.BAD_REQUEST,
+                errors);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleException(DataIntegrityViolationException ex){
         List<String> details = new ArrayList<>();
-        details.add(ex.getMessage());
+        details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                todayDate, "Data Integrity Violation or Duplicate Entry",HttpStatus.CONFLICT,null);
+                todayDate, "Data Integrity Violation or Duplicate Entry",HttpStatus.CONFLICT,details);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
     }
 
@@ -62,7 +79,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) {
         List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
+        details.add(ex.getMessage());
+        log.info(String.valueOf(ex));
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 todayDate, "Something went wrong while trying to process your request",
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -81,22 +99,15 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+    @ExceptionHandler(NoHandlerFoundException.class)
+    protected ResponseEntity<Object> handleNoHandlerFoundException(
+            NoHandlerFoundException ex) {
+        String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
-        final List<String> errors = new ArrayList<>();
-        for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
-        }
-        for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-        }
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
-                todayDate, null,HttpStatus.BAD_REQUEST,
-                errors);
-        return handleExceptionInternal(ex, exceptionResponse, headers, exceptionResponse.getStatus(), request);
-
+                todayDate, error,HttpStatus.NOT_FOUND,
+                null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
 
