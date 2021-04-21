@@ -3,7 +3,6 @@ package com.etz.authorisationserver.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -25,7 +24,7 @@ public class ControllerExceptionHandler  {
     private final LocalDateTime todayDate = LocalDateTime.now();
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<Object> resourceNotFoundException(ResourceNotFoundException ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
@@ -67,7 +66,7 @@ public class ControllerExceptionHandler  {
     }
 
     @ExceptionHandler(UnAuthorizedException.class)
-    public ResponseEntity<Object> handleException(UnAuthorizedException ex, WebRequest request) {
+    public ResponseEntity<Object> handleException(UnAuthorizedException ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
@@ -80,7 +79,6 @@ public class ControllerExceptionHandler  {
     public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
-        log.info(String.valueOf(ex));
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 todayDate, "Something went wrong while trying to process your request",
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -90,7 +88,7 @@ public class ControllerExceptionHandler  {
 
 
     @ExceptionHandler(FraudEngineException.class)
-    public ResponseEntity<Object> handlePersonException(FraudEngineException ex, WebRequest request) {
+    public ResponseEntity<Object> handleException(FraudEngineException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(

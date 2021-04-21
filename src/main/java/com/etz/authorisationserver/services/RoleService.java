@@ -64,8 +64,6 @@ public class RoleService {
     }
 
     public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
-        RolePermission rolePermission = new RolePermission();
-        List<RolePermission> newRolePermissionList = new ArrayList<>();
         Role roleOptional = new Role();
         if(updateRoleRequest.getRoleId() != null) {
             roleOptional = roleRepository.findById(updateRoleRequest.getRoleId())
@@ -77,21 +75,46 @@ public class RoleService {
             roleOptional.setUpdatedBy(updateRoleRequest.getUpdatedBy());
         }
         Role updatedRole =  roleRepository.save(roleOptional);
-
         List<RolePermission> previousRolePermissionList = rolePermissionRepository.findByRoleId(updatedRole.getId());
+
+        deletePermission(previousRolePermissionList,updateRoleRequest.getPermissions());
+
         updateRoleRequest.getPermissions().forEach(rolePermissionObject ->{
+            RolePermission rolePermission = new RolePermission();
             rolePermission.setRoleId(updatedRole.getId());
             rolePermission.setPermissionId(rolePermissionObject);
             rolePermission.setUpdatedBy(updateRoleRequest.getUpdatedBy());
-            newRolePermissionList.add(rolePermission);
+            rolePermissionRepository.save(rolePermission);
         });
 
-        //to remove duplicates
-        Set<RolePermission> setOfRolePermission = new LinkedHashSet<>(previousRolePermissionList);
-        setOfRolePermission.addAll(newRolePermissionList);
-        List<RolePermission> combinedList = new ArrayList<>(setOfRolePermission);
-        rolePermissionRepository.saveAll(combinedList);
         return true;
+    }
+
+    private List<Long> removeDuplicateInList(List<Long> listOne, List<Long> listTwo){
+        List<Long> duplicateList = new ArrayList<>();
+        for (Long numberVal : listOne) {
+            if (listTwo.contains(numberVal)) {
+                duplicateList.add(numberVal);
+            }
+        }
+        return duplicateList;
+    }
+
+    private void deletePermission(List<RolePermission> previousRolePermissionList, List<Long> permissions) {
+        // get previous user permissions IDs
+        List<Long> previousRolePermissionId = new ArrayList<>();
+        previousRolePermissionList.forEach(userRoleId -> previousRolePermissionId.add(userRoleId.getRoleId()));
+        // Take out duplicate from the permission
+        List<Long> duplicatePermissions = removeDuplicateInList(previousRolePermissionId,permissions);
+
+        if (!(duplicatePermissions.isEmpty())) {
+            // delete permission no longer needed
+            previousRolePermissionList.forEach(rolePermission -> duplicatePermissions.forEach(permissionId -> {
+                if (rolePermission.getPermissionId().equals(permissionId)) {
+                    rolePermissionRepository.deleteById(rolePermission.getId());
+                }
+            }));
+        }
     }
 
     @Transactional(readOnly = true)
