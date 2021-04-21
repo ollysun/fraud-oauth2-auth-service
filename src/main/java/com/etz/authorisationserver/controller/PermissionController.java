@@ -4,7 +4,6 @@ import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
 import com.etz.authorisationserver.dto.response.CollectionResponse;
 import com.etz.authorisationserver.dto.response.ModelResponse;
 import com.etz.authorisationserver.dto.response.PermissionResponse;
-import com.etz.authorisationserver.entity.Permission;
 import com.etz.authorisationserver.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
