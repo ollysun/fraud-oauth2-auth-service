@@ -10,6 +10,6 @@ FROM openjdk:8-jre-alpine
 
 ARG DEPENDENCY=target/dependency
 WORKDIR /app
-COPY --from=MAVEN_BUILD /build/target/billa-auth-service.jar /app/billa-auth-service.jar
+COPY --from=MAVEN_BUILD /build/target/authorisationserver-0.0.1-SNAPSHOT.jar /app/authorisationserver-0.0.1-SNAPSHOT.jar
 EXPOSE 8083
-ENTRYPOINT ["java", "-jar", "billa-auth-service.jar"]
+ENTRYPOINT ["java", "-jar", "authorisationserver-0.0.1-SNAPSHOT.jar"]
