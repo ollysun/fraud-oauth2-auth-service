@@ -1,7 +1,6 @@
 package com.etz.authorisationserver.entity;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;

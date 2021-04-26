@@ -50,7 +50,7 @@ public class User extends BaseEntity implements Serializable {
 	private Boolean status;
 
 	@ToString.Exclude
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -58,7 +58,7 @@ public class User extends BaseEntity implements Serializable {
 
 
 	@ToString.Exclude
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "user_permission",
 			joinColumns = @JoinColumn(name = "user_id"),
