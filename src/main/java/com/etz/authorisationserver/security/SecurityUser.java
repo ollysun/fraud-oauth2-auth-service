@@ -1,6 +1,6 @@
 package com.etz.authorisationserver.security;
 
-import com.etz.authorisationserver.entity.User;
+import com.etz.authorisationserver.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,11 +8,11 @@ import java.util.Collection;
 
 public class SecurityUser implements UserDetails {
 
-    private final User user;
+    private final UserEntity user;
 
     private final Collection<? extends GrantedAuthority> roles;
 
-    public SecurityUser(User user, Collection<? extends GrantedAuthority> roles) {
+    public SecurityUser(UserEntity user, Collection<? extends GrantedAuthority> roles) {
         this.user = user;
         this.roles = roles;
     }
@@ -52,7 +52,7 @@ public class SecurityUser implements UserDetails {
         return user.getStatus();
     }
 
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 }

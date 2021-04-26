@@ -3,7 +3,7 @@ package com.etz.authorisationserver.controller;
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
 import com.etz.authorisationserver.dto.response.*;
-import com.etz.authorisationserver.services.UserService;
+import com.etz.authorisationserver.services.UserEntityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,13 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserEntityService userService;
 
     @PostMapping
     public ResponseEntity<ModelResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest request){
         ModelResponse<UserResponse> response = new ModelResponse<>(userService.createUser(request));
         response.setStatus(HttpStatus.CREATED.value());
-        response.setMessage("User Created Successfully");
+        response.setMessage("UserEntity Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
         StringResponse result = new StringResponse();
         Boolean boolVal = userService.updateUser(request);
         if(Boolean.TRUE.equals(boolVal)){
-            result.setMessage("User Updated");
+            result.setMessage("UserEntity Updated");
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

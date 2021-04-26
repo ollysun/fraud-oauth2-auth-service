@@ -32,7 +32,7 @@ public class Role extends BaseEntity implements Serializable {
 
     @ToString.Exclude
     @ManyToMany(mappedBy = "roles", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private List<User> users = new ArrayList<>();
+    private List<UserEntity> userEntities = new ArrayList<>();
 
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
@@ -51,11 +51,11 @@ public class Role extends BaseEntity implements Serializable {
         if (!(o instanceof Role)) return false;
         if (!super.equals(o)) return false;
         Role role = (Role) o;
-        return id.equals(role.id) && Objects.equals(name, role.name) && description.equals(role.description) && status.equals(role.status) && users.equals(role.users) && rolePermissions.equals(role.rolePermissions);
+        return id.equals(role.id) && Objects.equals(name, role.name) && description.equals(role.description) && status.equals(role.status) && userEntities.equals(role.userEntities) && rolePermissions.equals(role.rolePermissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, description, status, users, rolePermissions);
+        return Objects.hash(super.hashCode(), id, name, description, status, userEntities, rolePermissions);
     }
 }

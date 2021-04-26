@@ -1,7 +1,7 @@
 package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
-import com.etz.authorisationserver.dto.response.PermissionResponse;
+import com.etz.authorisationserver.dto.response.PermissionEntityResponse;
 import com.etz.authorisationserver.dto.response.RoleResponse;
 import com.etz.authorisationserver.entity.Permission;
 import com.etz.authorisationserver.entity.Role;
@@ -21,7 +21,7 @@ public class PermissionService {
     @Autowired
     private PermissionRepository iPermissionRepository;
 
-    public List<PermissionResponse> getAllPermissions(Long permissionId, Boolean activatedStatus) {
+    public List<PermissionEntityResponse> getAllPermissions(Long permissionId, Boolean activatedStatus) {
         List<Permission> permissionList = new ArrayList<>();
         if (permissionId != null){
             Permission permission = iPermissionRepository.findById(permissionId)
@@ -35,10 +35,10 @@ public class PermissionService {
         return getPermissionResponse(permissionList);
     }
 
-    private List<PermissionResponse> getPermissionResponse(List<Permission> permissionList){
-        List<PermissionResponse> permissionResponseList = new ArrayList<>();
+    private List<PermissionEntityResponse> getPermissionResponse(List<Permission> permissionList){
+        List<PermissionEntityResponse> permissionResponseList = new ArrayList<>();
         permissionList.forEach(permissionListObject -> {
-            PermissionResponse permissionResponse = PermissionResponse.builder()
+            PermissionEntityResponse permissionResponse = PermissionEntityResponse.builder()
                     .permissionId(permissionListObject.getId())
                     .name(permissionListObject.getName())
                     .status(permissionListObject.getStatus())
@@ -50,7 +50,7 @@ public class PermissionService {
         return permissionResponseList;
     }
 
-    public PermissionResponse createPermission(CreatePermissionRequest createPermissionRequest) {
+    public PermissionEntityResponse createPermission(CreatePermissionRequest createPermissionRequest) {
         Permission permission = new Permission();
         permission.setName(createPermissionRequest.getName());
         permission.setStatus(Boolean.TRUE);
@@ -58,7 +58,7 @@ public class PermissionService {
 
         Permission createPermission = iPermissionRepository.save(permission);
 
-        return PermissionResponse.builder()
+        return PermissionEntityResponse.builder()
                     .permissionId(createPermission.getId())
                     .name(createPermission.getName())
                     .status(createPermission.getStatus())

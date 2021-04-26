@@ -1,7 +1,6 @@
 package com.etz.authorisationserver.dto.request;
 import lombok.Data;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -9,6 +8,7 @@ import java.util.List;
 
 @Data
 public class CreateUserRequest implements Serializable {
+
     @NotNull(message = "User name cannot be empty")
     private String username;
 
@@ -36,7 +36,6 @@ public class CreateUserRequest implements Serializable {
 
     private Boolean status;
     
-    @Valid
     @NotNull(message ="Please enter the roleId")
     private List<Long> roleId;
     private List<Long> permissionIds;

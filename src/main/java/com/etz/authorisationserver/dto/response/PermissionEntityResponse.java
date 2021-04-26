@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
-public class PermissionResponse implements Serializable {
+public class PermissionEntityResponse implements Serializable {
 
     private Long permissionId;
     private String name;

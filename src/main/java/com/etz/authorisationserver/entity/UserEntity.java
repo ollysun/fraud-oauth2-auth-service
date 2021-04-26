@@ -1,7 +1,6 @@
 package com.etz.authorisationserver.entity;
 
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,12 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class User extends BaseEntity implements Serializable {
+@Data
+public class UserEntity extends BaseEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -50,7 +45,7 @@ public class User extends BaseEntity implements Serializable {
 	private Boolean status;
 
 	@ToString.Exclude
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -58,7 +53,7 @@ public class User extends BaseEntity implements Serializable {
 
 
 	@ToString.Exclude
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "user_permission",
 			joinColumns = @JoinColumn(name = "user_id"),
@@ -70,7 +65,7 @@ public class User extends BaseEntity implements Serializable {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		User that = (User) o;
+		UserEntity that = (UserEntity) o;
 
 		return id != null && id.equals(that.id);
 	}
