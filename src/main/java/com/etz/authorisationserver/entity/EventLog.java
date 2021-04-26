@@ -31,5 +31,5 @@ public class EventLog extends BaseEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", columnDefinition = "bigint", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID"))
-    private User user;
+    private UserEntity user;
 }

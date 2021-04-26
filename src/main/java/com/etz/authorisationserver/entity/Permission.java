@@ -32,7 +32,7 @@ public class Permission extends BaseEntity{
 
     @ToString.Exclude
     @ManyToMany(mappedBy = "permissions",fetch = FetchType.LAZY)
-    private List<User> users = new ArrayList<>();
+    private List<UserEntity> userEntities = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
@@ -40,11 +40,11 @@ public class Permission extends BaseEntity{
         if (!(o instanceof Permission)) return false;
         if (!super.equals(o)) return false;
         Permission that = (Permission) o;
-        return id == that.id && name.equals(that.name) && status.equals(that.status) && roles.equals(that.roles) && users.equals(that.users);
+        return id == that.id && name.equals(that.name) && status.equals(that.status) && roles.equals(that.roles) && userEntities.equals(that.userEntities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, status, roles, users);
+        return Objects.hash(super.hashCode(), id, name, status, roles, userEntities);
     }
 }

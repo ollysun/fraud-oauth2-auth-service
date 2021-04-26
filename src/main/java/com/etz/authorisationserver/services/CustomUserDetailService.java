@@ -2,7 +2,7 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.entity.Permission;
 import com.etz.authorisationserver.entity.Role;
-import com.etz.authorisationserver.entity.User;
+import com.etz.authorisationserver.entity.UserEntity;
 import com.etz.authorisationserver.repository.UserRepository;
 import com.etz.authorisationserver.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +29,9 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsername(username);
         if (user == null)
-            throw new UsernameNotFoundException("Could not find User");
+            throw new UsernameNotFoundException("Could not find UserEntity");
         return new SecurityUser(user, getAuthorities(user.getRoles()));
     }
 

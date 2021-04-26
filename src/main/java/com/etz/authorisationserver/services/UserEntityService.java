@@ -4,7 +4,9 @@ import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
 import com.etz.authorisationserver.dto.response.UpdatedUserResponse;
 import com.etz.authorisationserver.dto.response.UserResponse;
-import com.etz.authorisationserver.entity.*;
+import com.etz.authorisationserver.entity.UserEntity;
+import com.etz.authorisationserver.entity.UserPermission;
+import com.etz.authorisationserver.entity.UserRole;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Service
 @Slf4j
-@Transactional
-public class UserService {
+@Service
+public class UserEntityService {
 
     @Autowired
     private UserRepository userRepository;
@@ -43,7 +44,7 @@ public class UserService {
         createUserRequest.setStatus(Boolean.TRUE);
         createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 
-        User userRequest = new User();
+        UserEntity userRequest = new UserEntity();
         userRequest.setFirstName(createUserRequest.getFirstname());
         userRequest.setPassword(createUserRequest.getPassword());
         userRequest.setUsername(createUserRequest.getUsername());
@@ -52,7 +53,7 @@ public class UserService {
         userRequest.setPhone(createUserRequest.getPhone());
         userRequest.setEmail(createUserRequest.getEmail());
         userRequest.setCreatedBy(createUserRequest.getCreatedBy());
-        User user = userRepository.save(userRequest);
+        UserEntity user = userRepository.save(userRequest);
         log.info(user.toString());
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())
                 && !(createUserRequest.getRoleId().isEmpty())){
@@ -77,7 +78,7 @@ public class UserService {
     }
 
 
-    private UserResponse outputUserResponse(User user, CreateUserRequest createUserRequest){
+    private UserResponse outputUserResponse(UserEntity user, CreateUserRequest createUserRequest){
         return UserResponse.builder()
                            .userId(user.getId())
                            .userName(user.getUsername())
@@ -106,10 +107,10 @@ public class UserService {
 
     public Boolean updateUser(UpdateUserRequest updateUserRequest){
 
-        User user = new User();
+        UserEntity user = new UserEntity();
         if(updateUserRequest.getUserId() != null) {
             user = userRepository.findById(updateUserRequest.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User Not found " + updateUserRequest.getUserId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("UserEntity Not found " + updateUserRequest.getUserId()));
             user.setUsername(updateUserRequest.getUsername());
             user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
             user.setFirstName(updateUserRequest.getFirstname());
@@ -121,7 +122,7 @@ public class UserService {
             user.setStatus(updateUserRequest.getStatus());
             user.setUpdatedBy(updateUserRequest.getUpdatedBy());
         }
-        User updatedUser = userRepository.save(user);
+        UserEntity updatedUser = userRepository.save(user);
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())
                 && !(updateUserRequest.getRoleId().isEmpty())){
 
@@ -202,7 +203,7 @@ public class UserService {
         }
     }
 
-    private UpdatedUserResponse outputUpdatedUserResponse(User user, UpdateUserRequest updateUserRequest){
+    private UpdatedUserResponse outputUpdatedUserResponse(UserEntity user, UpdateUserRequest updateUserRequest){
         UpdatedUserResponse userResponse = new UpdatedUserResponse();
         userResponse.setUserId(user.getId());
         userResponse.setUsername(user.getUsername());
@@ -222,10 +223,10 @@ public class UserService {
     }
 
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
-        List<User> userList = new ArrayList<>();
+        List<UserEntity> userList = new ArrayList<>();
         List<UserResponse> userResponseList;
         if (userId != null){
-            User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User Not found " + userId));
+            UserEntity user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("UserEntity Not found " + userId));
             userList.add(user);
         } else if (Boolean.TRUE.equals(activatedStatus)) {
             userList.addAll(userRepository.findByStatus(true));
@@ -250,9 +251,9 @@ public class UserService {
         return roleId;
     }
 
-    private List<UserResponse> assignUserResponseList(List<User> userList) {
+    private List<UserResponse> assignUserResponseList(List<UserEntity> userList) {
         List<UserResponse> userResponseList = new ArrayList<>();
-        for (User userListObject : userList) {
+        for (UserEntity userListObject : userList) {
             UserResponse userResponse = UserResponse.builder()
                     .userId(userListObject.getId())
                     .email(userListObject.getEmail())
