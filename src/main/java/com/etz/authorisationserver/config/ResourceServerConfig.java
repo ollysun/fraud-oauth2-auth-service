@@ -2,6 +2,7 @@ package com.etz.authorisationserver.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -24,12 +25,22 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
-        resources.resourceId(RESOURCE_ID).tokenStore(tokenStore());
+        resources.resourceId(RESOURCE_ID).tokenStore(tokenStore()).stateless(false);
     }
 
     @Bean
     public TokenStore tokenStore(){
         return new JwtTokenStore(converter());
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable();
+        http.authorizeRequests()
+                .antMatchers("/health","/info", "/trace", "/monitoring",
+                             "/webjars/**","/swagger.html");
+        http.authorizeRequests().antMatchers("/api/**")
+                .authenticated();
     }
 
     @Bean
