@@ -38,7 +38,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http.cors().and().csrf().disable();
         http.authorizeRequests()
                 .antMatchers("/health","/info", "/trace", "/monitoring",
-                             "/webjars/**","/swagger.html");
+                             "/webjars/**","/swagger.html")
+                .permitAll();
         http.authorizeRequests().antMatchers("/api/**")
                 .authenticated();
     }
