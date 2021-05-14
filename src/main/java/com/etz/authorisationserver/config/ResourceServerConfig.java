@@ -33,16 +33,16 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         return new JwtTokenStore(converter());
     }
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable();
-        http.authorizeRequests()
-                .antMatchers("/health","/info", "/trace", "/monitoring",
-                             "/webjars/**","/swagger.html", "/api/**")
-                .permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/**")
-                .authenticated();
-    }
+//    @Override
+//    public void configure(HttpSecurity http) throws Exception {
+//        http.cors().and().csrf().disable();
+//        http.authorizeRequests()
+//                .antMatchers("/health","/info", "/trace", "/monitoring",
+//                             "/webjars/**","/swagger.html", "/api/**")
+//                .permitAll();
+//        http.authorizeRequests().antMatchers("/api/v1/**")
+//                .authenticated();
+//    }
 
     @Bean
     public DefaultTokenServices tokenServices(final TokenStore tokenStore) {
