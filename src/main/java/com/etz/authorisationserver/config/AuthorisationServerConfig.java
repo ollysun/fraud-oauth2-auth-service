@@ -66,6 +66,7 @@ public class AuthorisationServerConfig
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.jdbc(this.dataSource);
+        log.info(String.valueOf(clients));
     }
 
     @Override
@@ -78,6 +79,8 @@ public class AuthorisationServerConfig
                 .tokenStore(jdbcTokenStores)
                 .tokenEnhancer(enhancerChain);
 
+        log.info(endpoints.userDetailsService(userDetailsService).toString());
+
     }
 
 
@@ -85,8 +88,10 @@ public class AuthorisationServerConfig
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer.passwordEncoder(passwordEncoder)
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients();
     }
+
 
 
 }
