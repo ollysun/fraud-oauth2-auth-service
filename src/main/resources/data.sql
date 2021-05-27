@@ -20,7 +20,7 @@ INSERT INTO oauth_client_details
       (client_id,resource_ids, client_secret,
        scope, authorized_grant_types,web_server_redirect_uri, authorities, access_token_validity,
        refresh_token_validity, additional_information, autoapprove)
-VALUES ('clientId2', 'fraud-eagle-eye-manager','$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
+VALUES ('eagle-eye-manager', 'fraud-eagle-eye-manager','$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
 'read,write', 'password,authorization_code,refresh_token', null,'ROLE_CLIENT,ROLE_TRUSTED_CLIENT', 360000,
 360000, null, true);
 
