@@ -18,7 +18,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @MappedSuperclass
-public class BaseEntity implements Serializable {
+public abstract class BaseEntity  {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
