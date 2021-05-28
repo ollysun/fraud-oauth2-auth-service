@@ -64,9 +64,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/v1/**")
                 .authenticated();
 
-
-        // by default uses a Bean by the name of corsConfigurationSource
-        //http.cors(withDefaults());
     }
 
 
@@ -82,17 +79,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Headers","Access-Control-Allow-Origin","Access-Control-Request-Method", "Access-Control-Request-Headers","Origin","Cache-Control", "Content-Type", "Authorization"));
-//        config.setAllowedOrigins(Collections.singletonList("*"));
-//        config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE","OPTIONS", "PATCH"));
-//        config.setAllowCredentials(true);
-//        source.registerCorsConfiguration("/**", config);
-//        return source;
-//    }
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corFilter() {
@@ -103,7 +89,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         configAutenticacao.setAllowedOriginPatterns(Collections.singletonList("*"));
         configAutenticacao.addAllowedHeader("*");
         configAutenticacao.addAllowedMethod("*");
-        configAutenticacao.setMaxAge(3600L);
         source.registerCorsConfiguration("/**", configAutenticacao); // Global for all paths
 
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
