@@ -1,5 +1,6 @@
 package com.etz.authorisationserver.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     private static final String RESOURCE_ID = "fraud-engine";
 
+    @Value("${security.secret-key}")
+    private String secretKey;
+
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
         resources.resourceId(RESOURCE_ID).tokenStore(tokenStore()).stateless(false);
@@ -44,7 +48,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter converter(){
         JwtAccessTokenConverter conv = new  JwtAccessTokenConverter();
-        conv.setSigningKey("AuthETransactNgView2021");
+        conv.setSigningKey(secretKey);
         return conv;
     }
 

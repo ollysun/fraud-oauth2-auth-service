@@ -3,6 +3,9 @@ server:
     servlet:
         context-path: /api
 
+security:
+    secret-key: AuthETransactNgView2021
+
 spring:
     application:
         name: authorisation-service
