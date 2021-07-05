@@ -3,6 +3,7 @@ package com.etz.authorisationserver.config;
 import com.etz.authorisationserver.services.CustomUserDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -34,6 +35,9 @@ public class AuthorisationServerConfig
     @Autowired
     private final JdbcTokenStores jdbcTokenStores;
 
+    @Value("${security.secret-key}")
+    private String secretKey;
+
     public AuthorisationServerConfig(DataSource dataSource, PasswordEncoder passwordEncoder,
                                      AuthenticationManager authenticationManager,
                                      CustomUserDetailService userDetailsService, JdbcTokenStores jdbcTokenStores) {
@@ -59,7 +63,7 @@ public class AuthorisationServerConfig
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         CustomTokenConverter tokenConverter = new CustomTokenConverter();
-        tokenConverter.setSigningKey("AuthETransactNgView2021");
+        tokenConverter.setSigningKey(secretKey);
         return tokenConverter;
     }
 

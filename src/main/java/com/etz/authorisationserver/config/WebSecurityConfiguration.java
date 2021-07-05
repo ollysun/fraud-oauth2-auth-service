@@ -21,7 +21,6 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Collections;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
