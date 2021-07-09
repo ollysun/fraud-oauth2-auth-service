@@ -16,9 +16,6 @@ public class UpdateUserRequest implements Serializable {
     @NotNull(message = "User name cannot be empty")
     private String username;
 
-    @NotNull(message = "Password cannot be empty")
-    private String password;
-
     @NotNull(message = "First name cannot be empty")
     private String firstname;
 
@@ -42,7 +39,7 @@ public class UpdateUserRequest implements Serializable {
     private Boolean status;
 
     @NotNull(message ="Please enter the roleId")
-    private List<Long> roleId;
+    private Long roleId;
 
     private List<Long> permissionIds;
 
