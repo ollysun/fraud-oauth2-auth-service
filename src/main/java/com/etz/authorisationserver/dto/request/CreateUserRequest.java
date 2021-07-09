@@ -37,7 +37,8 @@ public class CreateUserRequest implements Serializable {
     private Boolean status;
     
     @NotNull(message ="Please enter the roleId")
-    private List<Long> roleId;
+    private Long roleId;
+
     private List<Long> permissionIds;
 
     @NotNull(message = "createdBy cannot be empty")

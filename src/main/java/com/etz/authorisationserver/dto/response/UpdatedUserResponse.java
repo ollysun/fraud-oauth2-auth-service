@@ -12,7 +12,7 @@ import java.util.List;
 public class UpdatedUserResponse extends UserEntity {
     private Long userId;
     private List<String> permissionIds;
-    private List<Long> roleId;
+    private Long roleId;
 }
 
 

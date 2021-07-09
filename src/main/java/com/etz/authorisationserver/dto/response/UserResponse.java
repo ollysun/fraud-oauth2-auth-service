@@ -16,7 +16,7 @@ public class UserResponse implements Serializable {
     private String phone;
     private String email;
     private Boolean hasRole;
-    private List<Long> roleId;
+    private Long roleId;
     private Boolean hasPermission;
     private List<String> permissionNames;
     private Boolean status;

@@ -37,7 +37,7 @@ public class UserEntityService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
+    @Transactional(rollbackFor = Throwable.class)
     public UserResponse createUser(CreateUserRequest createUserRequest){
         UserRole userRole = new UserRole();
         UserPermission userPermission = new UserPermission();
@@ -56,13 +56,11 @@ public class UserEntityService {
         UserEntity user = userRepository.save(userRequest);
         log.info(user.toString());
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())
-                && !(createUserRequest.getRoleId().isEmpty())){
-            createUserRequest.getRoleId().forEach(roleId -> {
-                userRole.setRoleId(roleId);
+                && Objects.nonNull(createUserRequest.getRoleId())){
+                userRole.setRoleId(createUserRequest.getRoleId());
                 userRole.setUserId(user.getId());
                 userRole.setCreatedBy(createUserRequest.getCreatedBy());
                 userRoleRepository.save(userRole);
-            });
         }
 
         if (Boolean.TRUE.equals(createUserRequest.getHasPermission())
@@ -104,7 +102,7 @@ public class UserEntityService {
         return permissionNames;
     }
 
-
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean updateUser(UpdateUserRequest updateUserRequest){
 
         UserEntity user = new UserEntity();
@@ -112,7 +110,6 @@ public class UserEntityService {
             user = userRepository.findById(updateUserRequest.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("UserEntity Not found " + updateUserRequest.getUserId()));
             user.setUsername(updateUserRequest.getUsername());
-            user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
             user.setFirstName(updateUserRequest.getFirstname());
             user.setLastName(updateUserRequest.getLastname());
             user.setPhone(updateUserRequest.getPhone());
@@ -124,20 +121,14 @@ public class UserEntityService {
         }
         UserEntity updatedUser = userRepository.save(user);
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())
-                && !(updateUserRequest.getRoleId().isEmpty())){
+                && Objects.nonNull(updateUserRequest.getRoleId())){
+            UserRole previousUserRoleList = userRoleRepository.findByUserIdAndRoleId(updateUserRequest.getUserId(), updateUserRequest.getRoleId())
+                                            .orElseThrow(() -> new ResourceNotFoundException("user Id " + updateUserRequest.getUserId() + " and role Id " + updateUserRequest.getRoleId() + "not found"));
 
-            List<UserRole> previousUserRoleList = userRoleRepository.findByUserId(updatedUser.getId());
-
-            deleteUserRole(previousUserRoleList,updateUserRequest.getRoleId() );
-
-            for (Long roleId : updateUserRequest.getRoleId()) {
-                UserRole newUserRole = new UserRole();
-                newUserRole.setRoleId(roleId);
-                newUserRole.setUserId(updatedUser.getId());
-                newUserRole.setUpdatedBy(updateUserRequest.getUpdatedBy());
-                userRoleRepository.save(newUserRole);
-            }
-
+            previousUserRoleList.setRoleId(updateUserRequest.getRoleId());
+            previousUserRoleList.setUserId(updateUserRequest.getUserId());
+            previousUserRoleList.setUpdatedBy(updateUserRequest.getUpdatedBy());
+            userRoleRepository.save(previousUserRoleList);
         }
 
         if (Boolean.TRUE.equals(updateUserRequest.getHasPermission())
@@ -157,7 +148,6 @@ public class UserEntityService {
         }
         return true;
     }
-
     private void deleteUserRole(List<UserRole> previousUserRole, List<Long> roles) {
         // get previous user permissions IDs
         List<Long> previousUserRoleId = new ArrayList<>();
@@ -222,6 +212,7 @@ public class UserEntityService {
         return userResponse;
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<UserEntity> userList = new ArrayList<>();
         List<UserResponse> userResponseList;
@@ -262,7 +253,7 @@ public class UserEntityService {
                     .hasPermission(userListObject.getHasPermission())
                     .hasRole(userListObject.getHasRole())
                     .phone(userListObject.getPhone())
-                    .roleId(getUserRoleId(userListObject.getId()))
+                    .roleId(userListObject.getId())
                     .permissionNames(getUserPermissions(userListObject.getId()))
                     .status(userListObject.getStatus())
                     .userName(userListObject.getUsername())
