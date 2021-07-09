@@ -10,7 +10,8 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="oauth_client_details")
 public class OauthClientDetails {
