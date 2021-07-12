@@ -44,68 +44,68 @@ insert into authorisation_service.role(name, description, status) values('ROLE_B
 
 /* Insert Data into Privilege Table  */
 insert into permission(name, status) values("PRODUCT.CREATE" ,1);
-                                             PRODUCT.READ
-                                             PRODUCT.UPDATE
-                                             PRODUCT.DELETE
-                                             PRODUCT.SERVICE.CREATE
-                                             PRODUCT.SERVICE.READ
-                                             PRODUCT.SERVICE.UPDATE
-                                             PRODUCT.SERVICE.DELETE
-                                             PRODUCT.DATASET.CREATE
-                                             PRODUCT.DATASET.READ
-                                             PRODUCT.DATASET.UPDATE
-                                             PRODUCT.DATASET.DELETE
-                                             PRODUCT.DATASET.APPROVE
-                                             CARD.READ
-                                             CARD.UPDATE
-                                             ACCOUNT.READ
-                                             ACCOUNT.UPDATE
-                                             PARAMETER.CREATE
-                                             PARAMETER.READ
-                                             PARAMETER.UPDATE
-                                             PARAMETER.DELETE
-                                             PARAMETER.APPROVE
-                                             RULE.CREATE
-                                             RULE.READ
-                                             RULE.UPDATE
-                                             RULE.DELETE
-                                             RULE.APPROVE
-                                             RULE.PRODUCT.MAP
-                                             RULE.PRODUCT.UNMAP
-                                             RULE.PRODUCT.APPROVE
-                                             PERMISSION.READ
-                                             PERMISSION.ASSIGN
-                                             ROLE.CREATE
-                                             ROLE.READ
-                                             ROLE.UPDATE
-                                             ROLE.DELETE
-                                             ROLE.APPROVE
-                                             USER.CREATE
-                                             USER.READ
-                                             USER.UPDATE
-                                             USER.DELETE
-                                             USER.APPROVE
-                                             NOTIFICATION_GROUP.CREATE
-                                             NOTIFICATION_GROUP.READ
-                                             NOTIFICATION_GROUP.UPDATE
-                                             NOTIFICATION_GROUP.DELETE
-                                             NOTIFICATION_GROUP.APPROVE
-                                             NOTIFICATION.READ
-                                             OFAC.CREATE
-                                             OFAC.READ
-                                             OFAC.UPDATE
-                                             OFAC.DELETE
-                                             OFAC.APROVE
-                                             WATCHLIST_INTERNAL.CREATE
-                                             WATCHLIST_INTERNAL.READ
-                                             WATCHLIST_INTERNAL.UPDATE
-                                             WATCHLIST_INTERNAL.DELETE
-                                             WATCHLIST_INTERNAL.APPROVE
-                                             REPORT.GET
-                                             REPORT.SCHEDULE.CREATE
-                                             REPORT.SCHEDULE.READ
-                                             REPORT.SCHEDULE.UPDATE
-                                             REPORT.SCHEDULE.DELETE
+insert into permission(name, status) values("PRODUCT.READ",1);
+insert into permission(name, status) values("PRODUCT.UPDATE",1);
+insert into permission(name, status) values("PRODUCT.DELETE",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.CREATE",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.READ",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.UPDATE",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.DELETE",1);
+insert into permission(name, status) values("SERVICE.DATASET.CREATE",1);
+insert into permission(name, status) values("SERVICE.DATASET.READ",1);
+insert into permission(name, status) values("SERVICE.DATASET.UPDATE",1);
+insert into permission(name, status) values("SERVICE.DATASET.DELETE",1);
+insert into permission(name, status) values("SERVICE.DATASET.APPROVE",1);
+insert into permission(name, status) values("CARD.READ",1);
+insert into permission(name, status) values("CARD.UPDATE",1);
+insert into permission(name, status) values("ACCOUNT.READ",1);
+insert into permission(name, status) values("ACCOUNT.UPDATE",1);
+insert into permission(name, status) values("PARAMETER.CREATE",1);
+insert into permission(name, status) values("PARAMETER.READ",1);
+insert into permission(name, status) values("PARAMETER.UPDATE",1);
+insert into permission(name, status) values("PARAMETER.DELETE",1);
+insert into permission(name, status) values("PARAMETER.APPROVE",1);
+insert into permission(name, status) values("RULE.CREATE",1);
+insert into permission(name, status) values("RULE.READ",1);
+insert into permission(name, status) values("RULE.UPDATE",1);
+insert into permission(name, status) values("RULE.DELETE",1);
+insert into permission(name, status) values("RULE.APPROVE",1);
+insert into permission(name, status) values("RULE.PRODUCT.MAP",1);
+insert into permission(name, status) values("RULE.PRODUCT.UNMAP",1);
+insert into permission(name, status) values("RULE.PRODUCT.APPROVE",1)
+insert into permission(name, status) values("PERMISSION.READ",1);
+insert into permission(name, status) values("PERMISSION.ASSIGN",1)
+insert into permission(name, status) values("ROLE.CREATE",1);
+insert into permission(name, status) values("ROLE.READ",1);
+insert into permission(name, status) values("ROLE.UPDATE",1);
+insert into permission(name, status) values("ROLE.DELETE",1);
+insert into permission(name, status) values("ROLE.APPROVE",1);
+insert into permission(name, status) values("USER.CREATE",1);
+insert into permission(name, status) values("USER.READ",1);
+insert into permission(name, status) values("USER.UPDATE",1);
+insert into permission(name, status) values("USER.DELETE",1);
+insert into permission(name, status) values("USER.APPROVE",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.CREATE",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.READ",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.UPDATE
+insert into permission(name, status) values("NOTIFICATION_GROUP.DELETE
+insert into permission(name, status) values("NOTIFICATION_GROUP.APPROVE
+insert into permission(name, status) values("NOTIFICATION.READ
+insert into permission(name, status) values("OFAC.CREATE
+insert into permission(name, status) values("OFAC.READ
+insert into permission(name, status) values("OFAC.UPDATE
+insert into permission(name, status) values("OFAC.DELETE
+insert into permission(name, status) values("OFAC.APROVE
+insert into permission(name, status) values("WATCHLIST_INTERNAL.CREATE
+insert into permission(name, status) values("WATCHLIST_INTERNAL.READ
+insert into permission(name, status) values("WATCHLIST_INTERNAL.UPDATE
+insert into permission(name, status) values("WATCHLIST_INTERNAL.DELETE
+insert into permission(name, status) values("WATCHLIST_INTERNAL.APPROVE
+insert into permission(name, status) values("REPORT.GET
+insert into permission(name, status) values("REPORT.SCHEDULE.CREATE
+insert into permission(name, status) values("REPORT.SCHEDULE.READ
+insert into permission(name, status) values("REPORT.SCHEDULE.UPDATE
+insert into permission(name, status) values("REPORT.SCHEDULE.DELETE
 
 
 insert into permission(name, status) values('WRITE_PERMISSION',1);
