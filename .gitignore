@@ -34,3 +34,6 @@ build/
 .mvn/
 mvnw
 logs/
+
+### app level ignore ###
+application-dev.yml

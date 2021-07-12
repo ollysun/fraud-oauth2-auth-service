@@ -10,8 +10,12 @@ spring:
     application:
         name: authorisation-service
 
-    profiles:
-        active: dev
+    flyway:
+        user: root
+        password: root
+        baseline-on-migrate: true
+        check-location: true
+        locations: classpath:db/migration
 
     cloud:
         consul:
@@ -26,12 +30,12 @@ spring:
             type: web
 
     datasource:
-        username: eagleeye_user
-        password: T@w!d2021
-        url: jdbc:mysql://172.17.10.83:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
+        username: root
+        password: root
+        url: jdbc:mysql://localhost:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
         driverClassName: com.mysql.cj.jdbc.Driver
-        initialization-mode: always
-        data: classpath:data.sql
+#        initialization-mode: always
+#        data: classpath:data.sql
 
     jackson:
         default-property-inclusion: NON_NULL
@@ -39,12 +43,12 @@ spring:
             accept-case-insensitive-properties: true
 
     jpa:
-        hibernate:
-            ddl-auto: create
+#        hibernate:
+#            ddl-auto: create
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL55Dialect
-        show-sql: false
+        show-sql: true
 
     main:
         allow-bean-definition-overriding: true
