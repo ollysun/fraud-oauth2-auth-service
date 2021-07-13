@@ -43,9 +43,69 @@ insert into authorisation_service.role(name, description, status) values('ROLE_B
 
 
 /* Insert Data into Privilege Table  */
-insert into permission(name, status) values('READ_PERMISSION',1);
-insert into permission(name, status) values('WRITE_PERMISSION',1);
-insert into permission(name, status) values('DELETE_PERMISSION',1);
+insert into permission(name, status) values("PRODUCT.CREATE" ,1);
+insert into permission(name, status) values("PRODUCT.READ",1);
+insert into permission(name, status) values("PRODUCT.UPDATE",1);
+insert into permission(name, status) values("PRODUCT.DELETE",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.CREATE",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.READ",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.UPDATE",1);
+insert into permission(name, status) values("PRODUCT.SERVICE.DELETE",1);
+insert into permission(name, status) values("SERVICE.DATASET.CREATE",1);
+insert into permission(name, status) values("SERVICE.DATASET.READ",1);
+insert into permission(name, status) values("SERVICE.DATASET.UPDATE",1);
+insert into permission(name, status) values("SERVICE.DATASET.DELETE",1);
+insert into permission(name, status) values("SERVICE.DATASET.APPROVE",1);
+insert into permission(name, status) values("CARD.READ",1);
+insert into permission(name, status) values("CARD.UPDATE",1);
+insert into permission(name, status) values("ACCOUNT.READ",1);
+insert into permission(name, status) values("ACCOUNT.UPDATE",1);
+insert into permission(name, status) values("PARAMETER.CREATE",1);
+insert into permission(name, status) values("PARAMETER.READ",1);
+insert into permission(name, status) values("PARAMETER.UPDATE",1);
+insert into permission(name, status) values("PARAMETER.DELETE",1);
+insert into permission(name, status) values("PARAMETER.APPROVE",1);
+insert into permission(name, status) values("RULE.CREATE",1);
+insert into permission(name, status) values("RULE.READ",1);
+insert into permission(name, status) values("RULE.UPDATE",1);
+insert into permission(name, status) values("RULE.DELETE",1);
+insert into permission(name, status) values("RULE.APPROVE",1);
+insert into permission(name, status) values("RULE.PRODUCT.MAP",1);
+insert into permission(name, status) values("RULE.PRODUCT.UNMAP",1);
+insert into permission(name, status) values("RULE.PRODUCT.APPROVE",1);
+insert into permission(name, status) values("PERMISSION.READ",1);
+insert into permission(name, status) values("PERMISSION.ASSIGN",1);
+insert into permission(name, status) values("ROLE.CREATE",1);
+insert into permission(name, status) values("ROLE.READ",1);
+insert into permission(name, status) values("ROLE.UPDATE",1);
+insert into permission(name, status) values("ROLE.DELETE",1);
+insert into permission(name, status) values("ROLE.APPROVE",1);
+insert into permission(name, status) values("USER.CREATE",1);
+insert into permission(name, status) values("USER.READ",1);
+insert into permission(name, status) values("USER.UPDATE",1);
+insert into permission(name, status) values("USER.DELETE",1);
+insert into permission(name, status) values("USER.APPROVE",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.CREATE",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.READ",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.UPDATE",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.DELETE",1);
+insert into permission(name, status) values("NOTIFICATION_GROUP.APPROVE",1);
+insert into permission(name, status) values("NOTIFICATION.READ",1);
+insert into permission(name, status) values("OFAC.CREATE",1);
+insert into permission(name, status) values("OFAC.READ",1);
+insert into permission(name, status) values("OFAC.UPDATE",1);
+insert into permission(name, status) values("OFAC.DELETE",1);
+insert into permission(name, status) values("OFAC.APROVE",1);
+insert into permission(name, status) values("WATCHLIST_INTERNAL.CREATE",1);
+insert into permission(name, status) values("WATCHLIST_INTERNAL.READ",1);
+insert into permission(name, status) values("WATCHLIST_INTERNAL.UPDATE",1);
+insert into permission(name, status) values("WATCHLIST_INTERNAL.DELETE",1);
+insert into permission(name, status) values("WATCHLIST_INTERNAL.APPROVE",1);
+insert into permission(name, status) values("REPORT.GET",1);
+insert into permission(name, status) values("REPORT.SCHEDULE.CREATE",1);
+insert into permission(name, status) values("REPORT.SCHEDULE.READ",1);
+insert into permission(name, status) values("REPORT.SCHEDULE.UPDATE",1);
+insert into permission(name, status) values("REPORT.SCHEDULE.DELETE",1);
 
 
 /* Insert Data into UserRole Table  */
