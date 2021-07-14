@@ -4,16 +4,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "role")
 @Getter
 @Setter
 @ToString
+@Where(clause = "deleted=false")
 @RequiredArgsConstructor
 public class Role extends BaseEntity implements Serializable {
     @Id
@@ -31,8 +36,9 @@ public class Role extends BaseEntity implements Serializable {
     private Boolean status;
 
     @ToString.Exclude
-    @ManyToMany(mappedBy = "roles", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private List<UserEntity> userEntities = new ArrayList<>();
+    @ManyToMany(mappedBy = "roles", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private List<UserEntity> userEntity = new ArrayList<>();
+    
 
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
@@ -43,19 +49,19 @@ public class Role extends BaseEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "permission_id",
                     nullable = false, updatable = false)
     )
-    private List<Permission> rolePermissions = new ArrayList<>();
+    private List<PermissionEntity> rolePermissionEntities = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Role)) return false;
-        if (!super.equals(o)) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Role role = (Role) o;
-        return id.equals(role.id) && Objects.equals(name, role.name) && description.equals(role.description) && status.equals(role.status) && userEntities.equals(role.userEntities) && rolePermissions.equals(role.rolePermissions);
+
+        return Objects.equals(id, role.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, description, status, userEntities, rolePermissions);
+        return 1179619963;
     }
 }

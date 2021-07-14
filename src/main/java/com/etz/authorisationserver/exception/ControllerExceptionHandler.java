@@ -87,8 +87,8 @@ public class ControllerExceptionHandler  {
     }
 
 
-    @ExceptionHandler(FraudEngineException.class)
-    public ResponseEntity<Object> handleException(FraudEngineException ex, WebRequest request) {
+    @ExceptionHandler(AuthServiceException.class)
+    public ResponseEntity<Object> handleException(AuthServiceException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         final ExceptionResponse exceptionResponse = new ExceptionResponse(

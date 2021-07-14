@@ -1,6 +1,6 @@
 package com.etz.authorisationserver.repository;
 
-import com.etz.authorisationserver.entity.Permission;
+import com.etz.authorisationserver.entity.PermissionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,10 +8,13 @@ import java.util.List;
 
 
 @Repository
-public interface PermissionRepository extends JpaRepository<Permission, Long> {
+public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
 
-    Permission findByName(String name);
+    PermissionEntity findByName(String name);
 
-    List<Permission> findByStatus(Boolean status);
+    List<PermissionEntity> findByStatus(Boolean status);
+
+    long countById(Long id);
+
 
 }

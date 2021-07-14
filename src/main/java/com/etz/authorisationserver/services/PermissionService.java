@@ -2,9 +2,7 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
 import com.etz.authorisationserver.dto.response.PermissionEntityResponse;
-import com.etz.authorisationserver.dto.response.RoleResponse;
-import com.etz.authorisationserver.entity.Permission;
-import com.etz.authorisationserver.entity.Role;
+import com.etz.authorisationserver.entity.PermissionEntity;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +20,22 @@ public class PermissionService {
     private PermissionRepository iPermissionRepository;
 
     public List<PermissionEntityResponse> getAllPermissions(Long permissionId, Boolean activatedStatus) {
-        List<Permission> permissionList = new ArrayList<>();
+        List<PermissionEntity> permissionEntityList = new ArrayList<>();
         if (permissionId != null){
-            Permission permission = iPermissionRepository.findById(permissionId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Permission Not found " + permissionId));
-            permissionList.add(permission);
+            PermissionEntity permissionEntity = iPermissionRepository.findById(permissionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("PermissionEntity Not found " + permissionId));
+            permissionEntityList.add(permissionEntity);
         } else if (Boolean.TRUE.equals(activatedStatus)) {
-            permissionList.addAll(iPermissionRepository.findByStatus(true));
+            permissionEntityList.addAll(iPermissionRepository.findByStatus(true));
         }else{
-            permissionList = iPermissionRepository.findAll();
+            permissionEntityList = iPermissionRepository.findAll();
         }
-        return getPermissionResponse(permissionList);
+        return getPermissionResponse(permissionEntityList);
     }
 
-    private List<PermissionEntityResponse> getPermissionResponse(List<Permission> permissionList){
+    private List<PermissionEntityResponse> getPermissionResponse(List<PermissionEntity> permissionEntityList){
         List<PermissionEntityResponse> permissionResponseList = new ArrayList<>();
-        permissionList.forEach(permissionListObject -> {
+        permissionEntityList.forEach(permissionListObject -> {
             PermissionEntityResponse permissionResponse = PermissionEntityResponse.builder()
                     .permissionId(permissionListObject.getId())
                     .name(permissionListObject.getName())
@@ -51,19 +49,19 @@ public class PermissionService {
     }
 
     public PermissionEntityResponse createPermission(CreatePermissionRequest createPermissionRequest) {
-        Permission permission = new Permission();
-        permission.setName(createPermissionRequest.getName());
-        permission.setStatus(Boolean.TRUE);
-        permission.setCreatedBy(createPermissionRequest.getCreatedBy());
+        PermissionEntity permissionEntity = new PermissionEntity();
+        permissionEntity.setName(createPermissionRequest.getName());
+        permissionEntity.setStatus(Boolean.TRUE);
+        permissionEntity.setCreatedBy(createPermissionRequest.getCreatedBy());
 
-        Permission createPermission = iPermissionRepository.save(permission);
+        PermissionEntity createPermissionEntity = iPermissionRepository.save(permissionEntity);
 
         return PermissionEntityResponse.builder()
-                    .permissionId(createPermission.getId())
-                    .name(createPermission.getName())
-                    .status(createPermission.getStatus())
-                    .createdBy(createPermission.getCreatedBy())
-                    .createdAt(createPermission.getCreatedAt())
+                    .permissionId(createPermissionEntity.getId())
+                    .name(createPermissionEntity.getName())
+                    .status(createPermissionEntity.getStatus())
+                    .createdBy(createPermissionEntity.getCreatedBy())
+                    .createdAt(createPermissionEntity.getCreatedAt())
                     .build();
     }
 }
