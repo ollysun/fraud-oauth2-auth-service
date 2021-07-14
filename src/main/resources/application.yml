@@ -10,9 +10,6 @@ spring:
     application:
         name: authorisation-service
 
-    profiles:
-        active: dev
-
     cloud:
         consul:
             host: http://consul.staging.etranzactng.net
