@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -13,6 +16,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Where(clause = "deleted=false")
 @RequiredArgsConstructor
 public class UserPermission extends BaseEntity {
 

@@ -38,7 +38,6 @@ public class UpdateUserRequest implements Serializable {
     @NotNull(message = "Please provide the boolean for status")
     private Boolean status;
 
-    @NotNull(message ="Please enter the roleId")
     private Long roleId;
 
     private List<Long> permissionIds;
