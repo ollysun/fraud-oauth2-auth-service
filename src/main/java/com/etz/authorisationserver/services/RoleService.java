@@ -36,7 +36,6 @@ public class RoleService {
 
     @Transactional(rollbackFor = Throwable.class)
     public RoleResponse createRole(CreateRoleRequest createRoleRequest) {
-        RolePermission rolePermission = new RolePermission();
         Role role = new Role();
         role.setName(createRoleRequest.getRoleName());
         role.setDescription(createRoleRequest.getDescription());
@@ -48,6 +47,7 @@ public class RoleService {
                 PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
                         .orElseThrow(() -> new ResourceNotFoundException("Permission not found for this Id " + permissionId));
                 if(permissionEntity != null) {
+                    RolePermission rolePermission = new RolePermission();
                     rolePermission.setRoleId(createdRole.getId());
                     rolePermission.setPermissionId(permissionId);
                     rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
@@ -118,7 +118,7 @@ public class RoleService {
     private void deletePermission(List<RolePermission> previousRolePermissionList, List<Long> permissions) {
         // get previous user permissions IDs
         List<Long> previousRolePermissionId = new ArrayList<>();
-        previousRolePermissionList.forEach(userRoleId -> previousRolePermissionId.add(userRoleId.getRoleId()));
+        previousRolePermissionList.forEach(rolePermEntity -> previousRolePermissionId.add(rolePermEntity.getPermissionId()));
         // Take out duplicate from the permission
         List<Long> duplicatePermissions = removeDuplicateInList(previousRolePermissionId,permissions);
 
@@ -126,7 +126,7 @@ public class RoleService {
             // delete permission no longer needed
             previousRolePermissionList.forEach(rolePermission -> duplicatePermissions.forEach(permissionId -> {
                 if (rolePermission.getPermissionId().equals(permissionId)) {
-                    rolePermissionRepository.deleteById(rolePermission.getId());
+                    rolePermissionRepository.delete(rolePermission);
                 }
             }));
         }

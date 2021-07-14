@@ -40,8 +40,7 @@ public class UserEntityService {
 
     @Transactional(rollbackFor = Throwable.class)
     public UserResponse createUser(CreateUserRequest createUserRequest){
-        UserRole userRole = new UserRole();
-        UserPermission userPermission = new UserPermission();
+        List<UserPermission> userPermissionList = new ArrayList<>();
         createUserRequest.setStatus(Boolean.TRUE);
         createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 
@@ -60,6 +59,7 @@ public class UserEntityService {
             Role roleEntity = roleRepository.findById(createUserRequest.getRoleId())
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found for this Id " + createUserRequest.getRoleId()));
             if(roleEntity != null) {
+                UserRole userRole = new UserRole();
                 userRole.setRoleId(createUserRequest.getRoleId());
                 userRole.setUserId(user.getId());
                 userRole.setCreatedBy(createUserRequest.getCreatedBy());
@@ -73,12 +73,15 @@ public class UserEntityService {
                 PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
                         .orElseThrow(() -> new ResourceNotFoundException("Permission not found for this Id " + permissionId));
                 if(permissionEntity != null) {
+                    UserPermission userPermission = new UserPermission();
                     userPermission.setUserId(user.getId());
                     userPermission.setPermissionId(permissionId);
                     userPermission.setCreatedBy(createUserRequest.getCreatedBy());
-                    userPermissionRepository.save(userPermission);
+                    userPermissionList.add(userPermission);
                 }
             });
+            userPermissionRepository.saveAll(userPermissionList);
+            log.info("userpermission " + userPermissionList);
         }
         return outputUserResponse(user, createUserRequest);
     }
@@ -134,9 +137,12 @@ public class UserEntityService {
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found for this Id " + updateUserRequest.getRoleId()));
 
             if(Objects.nonNull(roleEntity)) {
-                UserRole previousUserRoleList = userRoleRepository.findByUserIdAndRoleId(updateUserRequest.getUserId(), updateUserRequest.getRoleId())
-                        .orElseThrow(() -> new ResourceNotFoundException("user Id " + updateUserRequest.getUserId() + " and role Id " + updateUserRequest.getRoleId() + "not found"));
-
+                //delete previous role to enforce one user and one role
+                UserRole deletedPreviousUserRole = userRoleRepository.findByUserId(updateUserRequest.getUserId());
+                if(deletedPreviousUserRole != null) {
+                    userRoleRepository.deleteByUserId(deletedPreviousUserRole.getUserId());
+                }
+                UserRole previousUserRoleList = new UserRole();
                 previousUserRoleList.setRoleId(updateUserRequest.getRoleId());
                 previousUserRoleList.setUserId(updateUserRequest.getUserId());
                 previousUserRoleList.setUpdatedBy(updateUserRequest.getUpdatedBy());
@@ -189,7 +195,7 @@ public class UserEntityService {
             // delete permissions no longer needed
             previousUserPerm.forEach(userPerm -> duplicatePermissions.forEach(permissionId -> {
                 if (userPerm.getPermissionId().equals(permissionId)) {
-                    userPermissionRepository.deleteById(userPerm.getId());
+                    userPermissionRepository.delete(userPerm);
                 }
             }));
         }
@@ -231,7 +237,7 @@ public class UserEntityService {
                     .hasPermission(userListObject.getHasPermission())
                     .hasRole(userListObject.getHasRole())
                     .phone(userListObject.getPhone())
-                    .roleId(userListObject.getId())
+                    .roleId(getUserRoleId(userListObject.getId()))
                     .permissionNames(getUserPermissions(userListObject.getId()))
                     .status(userListObject.getStatus())
                     .userName(userListObject.getUsername())
@@ -241,6 +247,11 @@ public class UserEntityService {
             userResponseList.add(userResponse);
         }
         return userResponseList;
+    }
+
+    private Long getUserRoleId(Long userId){
+        UserRole userRole = userRoleRepository.findByUserId(userId);
+        return userRole.getRoleId();
     }
 
     @Transactional(rollbackFor = Throwable.class)
