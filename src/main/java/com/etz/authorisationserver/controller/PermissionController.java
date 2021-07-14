@@ -1,6 +1,7 @@
 package com.etz.authorisationserver.controller;
 
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
+import com.etz.authorisationserver.dto.response.BooleanResponse;
 import com.etz.authorisationserver.dto.response.CollectionResponse;
 import com.etz.authorisationserver.dto.response.ModelResponse;
 import com.etz.authorisationserver.dto.response.PermissionEntityResponse;
@@ -35,6 +36,11 @@ public class PermissionController {
         ModelResponse<PermissionEntityResponse> response = new ModelResponse<>(permissionService.createPermission(request));
         response.setStatus(HttpStatus.CREATED.value());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public BooleanResponse deletePermission(@PathVariable Long id){
+        return new BooleanResponse(permissionService.deletePermissionInTransaction(id));
     }
 
 }

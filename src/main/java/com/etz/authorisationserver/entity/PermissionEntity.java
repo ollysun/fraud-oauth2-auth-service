@@ -17,7 +17,6 @@ import java.util.*;
 @Getter
 @Setter
 @ToString
-@SQLDelete(sql = "UPDATE permission SET deleted = true, status=0 WHERE id = ?", check = ResultCheckStyle.COUNT)
 @Where(clause = "deleted=false")
 @RequiredArgsConstructor
 public class PermissionEntity extends BaseEntity implements Serializable {

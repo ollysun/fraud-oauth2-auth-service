@@ -122,7 +122,7 @@ INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (3,2);
 /* Insert Data into UserPermission Table  */
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,1);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(2,2);
-insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,3);
+insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,1);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,4);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(3,5);
 

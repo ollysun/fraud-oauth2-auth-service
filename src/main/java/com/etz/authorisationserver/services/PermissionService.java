@@ -3,8 +3,14 @@ package com.etz.authorisationserver.services;
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
 import com.etz.authorisationserver.dto.response.PermissionEntityResponse;
 import com.etz.authorisationserver.entity.PermissionEntity;
+import com.etz.authorisationserver.entity.RolePermission;
+import com.etz.authorisationserver.entity.UserPermission;
+import com.etz.authorisationserver.exception.AuthServiceException;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
+import com.etz.authorisationserver.repository.RolePermissionRepository;
+import com.etz.authorisationserver.repository.UserPermissionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,13 +18,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
-@Transactional
 public class PermissionService {
 
     @Autowired
     private PermissionRepository iPermissionRepository;
 
+    @Autowired
+    private UserPermissionRepository userPermissionRepository;
+
+    @Autowired
+    private RolePermissionRepository rolePermissionRepository;
+
+    @Transactional(readOnly = true)
     public List<PermissionEntityResponse> getAllPermissions(Long permissionId, Boolean activatedStatus) {
         List<PermissionEntity> permissionEntityList = new ArrayList<>();
         if (permissionId != null){
@@ -48,6 +61,7 @@ public class PermissionService {
         return permissionResponseList;
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     public PermissionEntityResponse createPermission(CreatePermissionRequest createPermissionRequest) {
         PermissionEntity permissionEntity = new PermissionEntity();
         permissionEntity.setName(createPermissionRequest.getName());
@@ -63,5 +77,25 @@ public class PermissionService {
                     .createdBy(createPermissionEntity.getCreatedBy())
                     .createdAt(createPermissionEntity.getCreatedAt())
                     .build();
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public Boolean deletePermissionInTransaction(Long permissionId) {
+        PermissionEntity permissionEntity = iPermissionRepository.findById(permissionId)
+                                                                 .orElseThrow(() -> new ResourceNotFoundException("Permission details not found " + permissionId));
+        List<UserPermission> userPermissionList = userPermissionRepository.findByPermissionId(permissionId);
+
+        List<RolePermission> rolePermissionList = rolePermissionRepository.findByPermissionId(permissionId);
+
+        try{
+            iPermissionRepository.deleteByPermissionId(permissionEntity.getId());
+            userPermissionRepository.deleteByPermissionId(userPermissionList.get(0).getPermissionId());
+            rolePermissionRepository.deleteByPermissionId(rolePermissionList.get(0).getPermissionId());
+        } catch (Exception ex) {
+            log.error("Error occurred while deactivating Permission entity from database", ex);
+            throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
+        }
+
+        return Boolean.TRUE;
     }
 }
