@@ -2,7 +2,6 @@ package com.etz.authorisationserver.services;
 
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
-import com.etz.authorisationserver.dto.response.UpdatedUserResponse;
 import com.etz.authorisationserver.dto.response.UserResponse;
 import com.etz.authorisationserver.entity.*;
 import com.etz.authorisationserver.exception.AuthServiceException;
@@ -197,7 +196,7 @@ public class UserEntityService {
     }
 
 
-    @Transactional(rollbackFor = Throwable.class)
+    @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<UserEntity> userList = new ArrayList<>();
         List<UserResponse> userResponseList;

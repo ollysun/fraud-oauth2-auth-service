@@ -34,7 +34,7 @@ public class RoleService {
     private UserRoleRepository userRoleRepository;
 
 
-    @Transactional
+    @Transactional(rollbackFor = Throwable.class)
     public RoleResponse createRole(CreateRoleRequest createRoleRequest) {
         RolePermission rolePermission = new RolePermission();
         Role role = new Role();
@@ -73,6 +73,7 @@ public class RoleService {
         return permissionNameList;
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
         Role roleOptional = new Role();
         if(updateRoleRequest.getRoleId() != null) {
