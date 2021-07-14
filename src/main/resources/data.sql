@@ -33,6 +33,10 @@ INSERT INTO user(username, password,  first_name, last_name, phone, email, statu
 VALUES('admin','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'moses',
        'olalere','08067657890','olalere.moses2@etranzactng.com', 1);
 
+INSERT INTO user(username, password,  first_name, last_name, phone, email, status)
+VALUES('test','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'moses',
+       'olalere','08067657896','olalere3.moses2@etranzactng.com', 1);
+
 /* Insert Data into Role Table  */
 insert into authorisation_service.role(name, description, status) values('ROLE_USER', 'user role', 1);
 insert into authorisation_service.role(name, description, status) values('ROLE_ADMIN', 'admin role', 1);
@@ -110,13 +114,19 @@ insert into permission(name, status) values("REPORT.SCHEDULE.DELETE",1);
 
 /* Insert Data into UserRole Table  */
 INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (1,1);
-INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (2,1);
 INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (2,2);
+INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (3,2);
+
 
 
 /* Insert Data into UserPermission Table  */
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,1);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(2,2);
+insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,3);
+insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,4);
+insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(3,5);
+
+
 
 /* Insert Data into RolePermission Table  */
 insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,1);

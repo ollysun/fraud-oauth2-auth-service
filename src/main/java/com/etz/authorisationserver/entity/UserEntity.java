@@ -1,16 +1,23 @@
 package com.etz.authorisationserver.entity;
 
 import lombok.*;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
 @Table(name = "user")
-@Data
+@Getter
+@Setter
+@ToString
+@Where(clause = "deleted=false")
+@RequiredArgsConstructor
 public class UserEntity extends BaseEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,10 +54,9 @@ public class UserEntity extends BaseEntity implements Serializable {
 	@ToString.Exclude
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id"))
+			joinColumns = {@JoinColumn(name = "user_id")},
+			inverseJoinColumns = {@JoinColumn(name = "role_id")})
 	private List<Role> roles = new ArrayList<>();
-
 
 	@ToString.Exclude
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -59,19 +65,19 @@ public class UserEntity extends BaseEntity implements Serializable {
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "permission_id")
 	)
-	private List<Permission> permissions = new ArrayList<>();
+	private List<PermissionEntity> permissionEntities = new ArrayList<>();
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		UserEntity that = (UserEntity) o;
 
-		return id != null && id.equals(that.id);
+		return Objects.equals(id, that.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return getClass().hashCode();
+		return 1838525018;
 	}
 }

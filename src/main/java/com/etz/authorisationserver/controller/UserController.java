@@ -51,4 +51,9 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}")
+    public BooleanResponse deleteUser(@PathVariable Long id){
+        return new BooleanResponse(userService.deleteUserInTransaction(id));
+    }
+
 }
