@@ -69,7 +69,7 @@ public class AuthorisationServerConfig
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.jdbc(this.dataSource);
+        clients.jdbc(this.dataSource);//what does this method do? does it help in token generation/client details configuration?
     }
 
     @Override
@@ -88,8 +88,8 @@ public class AuthorisationServerConfig
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer.passwordEncoder(passwordEncoder)
-                .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
+                .tokenKeyAccess("permitAll()")//allow everyone access tokenkey
+                .checkTokenAccess("isAuthenticated()");//check if generated token is authenticated
     }
 
 

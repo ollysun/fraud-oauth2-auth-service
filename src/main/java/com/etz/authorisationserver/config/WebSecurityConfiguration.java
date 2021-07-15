@@ -27,6 +27,10 @@ import java.util.Collections;
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+	private static final String[] SWAGGER_WHITELIST = {
+            // -- swagger ui
+            "/swagger", "/v2/api-docs", "/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/actuator/health",
+            "/configuration/security", "/swagger-ui.html", "/webjars/**" };
 
     @Bean
     @Override
@@ -35,7 +39,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {//details of a user are fetched from the db for authentication
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -59,6 +63,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/health","/info", "/trace", "/monitoring",
                         "/webjars/**","/swagger.html", "/api/v1/login","/api/oauth/client","/api/oauth/token")
+                .permitAll()
+                .antMatchers(SWAGGER_WHITELIST)
                 .permitAll();
         http.authorizeRequests().antMatchers("/api/v1/**")
                 .authenticated();
