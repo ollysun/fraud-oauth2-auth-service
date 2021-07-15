@@ -1,6 +1,9 @@
 package com.etz.authorisationserver.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +14,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Where(clause = "deleted=false")
 @Table(name = "user_role")
 public class UserRole extends BaseEntity implements Serializable {
     @Id

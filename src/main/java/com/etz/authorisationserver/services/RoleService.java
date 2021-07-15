@@ -3,18 +3,21 @@ package com.etz.authorisationserver.services;
 import com.etz.authorisationserver.dto.request.CreateRoleRequest;
 import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
 import com.etz.authorisationserver.dto.response.RoleResponse;
-import com.etz.authorisationserver.entity.Role;
-import com.etz.authorisationserver.entity.RolePermission;
+import com.etz.authorisationserver.entity.*;
+import com.etz.authorisationserver.exception.AuthServiceException;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import com.etz.authorisationserver.repository.RolePermissionRepository;
 import com.etz.authorisationserver.repository.RoleRepository;
+import com.etz.authorisationserver.repository.UserRoleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class RoleService {
 
@@ -27,10 +30,12 @@ public class RoleService {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
-    @Transactional
+
+    @Transactional(rollbackFor = Throwable.class)
     public RoleResponse createRole(CreateRoleRequest createRoleRequest) {
-        RolePermission rolePermission = new RolePermission();
         Role role = new Role();
         role.setName(createRoleRequest.getRoleName());
         role.setDescription(createRoleRequest.getDescription());
@@ -39,10 +44,15 @@ public class RoleService {
         Role createdRole = roleRepository.save(role);
         if(!(createRoleRequest.getPermissionList().isEmpty())) {
             for (Long permissionId : createRoleRequest.getPermissionList()) {
-                rolePermission.setRoleId(createdRole.getId());
-                rolePermission.setPermissionId(permissionId);
-                rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
-                rolePermissionRepository.save(rolePermission);
+                PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Permission not found for this Id " + permissionId));
+                if(permissionEntity != null) {
+                    RolePermission rolePermission = new RolePermission();
+                    rolePermission.setRoleId(createdRole.getId());
+                    rolePermission.setPermissionId(permissionId);
+                    rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
+                    rolePermissionRepository.save(rolePermission);
+                }
             }
         }
 
@@ -63,6 +73,7 @@ public class RoleService {
         return permissionNameList;
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
         Role roleOptional = new Role();
         if(updateRoleRequest.getRoleId() != null) {
@@ -80,11 +91,15 @@ public class RoleService {
         deletePermission(previousRolePermissionList,updateRoleRequest.getPermissions());
 
         updateRoleRequest.getPermissions().forEach(rolePermissionObject ->{
-            RolePermission rolePermission = new RolePermission();
-            rolePermission.setRoleId(updatedRole.getId());
-            rolePermission.setPermissionId(rolePermissionObject);
-            rolePermission.setUpdatedBy(updateRoleRequest.getUpdatedBy());
-            rolePermissionRepository.save(rolePermission);
+            PermissionEntity permissionEntity = permissionRepository.findById(rolePermissionObject)
+                    .orElseThrow(() -> new ResourceNotFoundException("Permission not found for this Id " + rolePermissionObject));
+            if(permissionEntity != null) {
+                RolePermission rolePermission = new RolePermission();
+                rolePermission.setRoleId(updatedRole.getId());
+                rolePermission.setPermissionId(rolePermissionObject);
+                rolePermission.setUpdatedBy(updateRoleRequest.getUpdatedBy());
+                rolePermissionRepository.save(rolePermission);
+            }
         });
 
         return true;
@@ -103,7 +118,7 @@ public class RoleService {
     private void deletePermission(List<RolePermission> previousRolePermissionList, List<Long> permissions) {
         // get previous user permissions IDs
         List<Long> previousRolePermissionId = new ArrayList<>();
-        previousRolePermissionList.forEach(userRoleId -> previousRolePermissionId.add(userRoleId.getRoleId()));
+        previousRolePermissionList.forEach(rolePermEntity -> previousRolePermissionId.add(rolePermEntity.getPermissionId()));
         // Take out duplicate from the permission
         List<Long> duplicatePermissions = removeDuplicateInList(previousRolePermissionId,permissions);
 
@@ -111,7 +126,7 @@ public class RoleService {
             // delete permission no longer needed
             previousRolePermissionList.forEach(rolePermission -> duplicatePermissions.forEach(permissionId -> {
                 if (rolePermission.getPermissionId().equals(permissionId)) {
-                    rolePermissionRepository.deleteById(rolePermission.getId());
+                    rolePermissionRepository.delete(rolePermission);
                 }
             }));
         }
@@ -152,5 +167,28 @@ public class RoleService {
         List<String> permissionsList = new ArrayList<>();
         rolePermissionList.forEach(rolePermissionObject -> permissionsList.add(permissionRepository.getOne(rolePermissionObject.getRoleId()).getName()));
         return permissionsList;
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public Boolean deleteRoleInTransaction(Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role Not found for this id = " + roleId));
+        List<RolePermission> rolePermissionList = rolePermissionRepository.findByRoleId(roleId);
+        UserRole userRole = userRoleRepository.findByRoleId(role.getId());
+        try {
+            roleRepository.deleteByRoleId(role.getId());
+            if (userRole != null) {
+                userRoleRepository.deleteByRoleId(userRole.getRoleId());
+            }
+            if(!rolePermissionList.isEmpty()) {
+                for (RolePermission rolePermission : rolePermissionList) {
+                    rolePermissionRepository.deleteByRoleId(rolePermission.getRoleId());
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Error occurred while deleting User entity from database", ex);
+            throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
+        }
+        return Boolean.TRUE;
     }
 }

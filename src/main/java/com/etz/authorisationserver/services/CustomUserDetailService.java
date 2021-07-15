@@ -1,6 +1,6 @@
 package com.etz.authorisationserver.services;
 
-import com.etz.authorisationserver.entity.Permission;
+import com.etz.authorisationserver.entity.PermissionEntity;
 import com.etz.authorisationserver.entity.Role;
 import com.etz.authorisationserver.entity.UserEntity;
 import com.etz.authorisationserver.repository.UserRepository;
@@ -14,9 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
+import java.util.*;
 
 @Slf4j
 @Service
@@ -29,7 +28,7 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsernameAndDeletedFalseAndStatusTrue(username);
         if (user == null)
             throw new UsernameNotFoundException("Could not find UserEntity");
         return new SecurityUser(user, getAuthorities(user.getRoles()));
@@ -41,11 +40,11 @@ public class CustomUserDetailService implements UserDetailsService {
 
     private List<String> getPermissions(final Collection<Role> roles) {
         final List<String> permissions = new ArrayList<>();
-        final List<Permission> collection = new ArrayList<>();
+        final List<PermissionEntity> collection = new ArrayList<>();
         for (final Role role : roles) {
-            collection.addAll(role.getRolePermissions());
+            collection.addAll(role.getRolePermissionEntities());
         }
-        for (final Permission item : collection) {
+        for (final PermissionEntity item : collection) {
             permissions.add(item.getName());
         }
 

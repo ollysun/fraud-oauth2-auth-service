@@ -18,7 +18,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/v1/users")
-@Validated
 public class UserController {
 
     @Autowired
@@ -60,7 +59,12 @@ public class UserController {
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-   
-   
-    
+
+
+    @DeleteMapping("/{id}")
+    public BooleanResponse deleteUser(@PathVariable Long id){
+        return new BooleanResponse(userService.deleteUserInTransaction(id));
+    }
+
+
 }

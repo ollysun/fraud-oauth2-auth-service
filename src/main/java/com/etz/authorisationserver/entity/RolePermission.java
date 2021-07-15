@@ -1,6 +1,7 @@
 package com.etz.authorisationserver.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Where(clause = "deleted=false")
 @Table(name = "role_permission")
 public class RolePermission extends BaseEntity implements Serializable {
 
