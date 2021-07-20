@@ -53,6 +53,7 @@ public class UserEntityService {
         userRequest.setPhone(createUserRequest.getPhone());
         userRequest.setEmail(createUserRequest.getEmail());
         userRequest.setCreatedBy(createUserRequest.getCreatedBy());
+
         UserEntity user = userRepository.save(userRequest);
         if (Boolean.TRUE.equals(createUserRequest.getHasRole())
                 && Objects.nonNull(createUserRequest.getRoleId())){
