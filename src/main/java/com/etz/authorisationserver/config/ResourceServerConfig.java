@@ -22,7 +22,7 @@ import java.util.Collections;
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
-    private static final String RESOURCE_ID = "fraud-engine";
+	private static final String RESOURCE_ID = "fraud-engine";
 
     @Value("${security.secret-key}")
     private String secretKey;

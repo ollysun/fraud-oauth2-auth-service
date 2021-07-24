@@ -8,7 +8,12 @@ import java.util.Collection;
 
 public class SecurityUser implements UserDetails {
 
-    private final UserEntity user;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6501213562982986167L;
+
+	private final UserEntity user;
 
     private final Collection<? extends GrantedAuthority> roles;
 
