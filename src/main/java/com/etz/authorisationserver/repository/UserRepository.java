@@ -1,7 +1,7 @@
 package com.etz.authorisationserver.repository;
 
 import com.etz.authorisationserver.entity.UserEntity;
-import com.google.common.base.Optional;
+//import com.google.common.base.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -22,6 +22,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmailOrUsername(String email, String username);
 
     UserEntity findByUsernameAndDeletedFalseAndStatusTrue(String username);
+    
+    Optional<UserEntity> findByPassword(String password);
+    
+    // Optional<UserEntity> findByUserId(String userId);
     
     @Transactional
     @Modifying

@@ -2,7 +2,9 @@ package com.etz.authorisationserver.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.etz.authorisationserver.util.Uuid5;
 
 import lombok.Data;
 
@@ -49,7 +53,7 @@ public class ResetPasswordTokens extends BaseEntity implements Serializable {
 	private boolean expired;
 	
 	@Column(name = "expirationDate",nullable = false)//Token expiration date. 30 minute from creation time.
-	private LocalDateTime expirationDate;
+	private Calendar expirationDate;
 	
 	
 }

@@ -54,7 +54,7 @@ public class UserEntity extends BaseEntity implements Serializable {
 	@OneToMany(mappedBy = "userId",fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
-	private List<ResetPasswordTokens> resetPasswordTokens;
+	private List<ResetPasswordTokens> resetPasswordTokens =new ArrayList<ResetPasswordTokens>();
 	
 	@ToString.Exclude
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
