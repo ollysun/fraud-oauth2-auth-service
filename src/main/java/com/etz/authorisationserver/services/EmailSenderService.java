@@ -13,10 +13,11 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Service
 public class EmailSenderService {
 
@@ -34,7 +35,7 @@ public class EmailSenderService {
 
 	  int resendCounter = 5;
 
-	  private static Message message;
+	  private  Message message;
 
 	  public void sendEmail(String to, String subject, String msg) {
 	    // Recipient's email ID needs to be mentioned.
@@ -106,30 +107,25 @@ public class EmailSenderService {
 	      message.setContent(multipart);
 
 	      Thread thread = new Thread(
-	        new Runnable() {
-	          @Override
-	          public void run() {
-	            try {
-	              // Send message
-	              Transport.send(message);
-	              System.out.println("Sent message successfully....");
-	            } catch (Exception e) {
-	              e.printStackTrace();
-	              sendEmail(to, subject, msg);
+				  () -> {
+					try {
+					  // Send message
+					  Transport.send(message);
+					  log.info("Sent message successfully....");
+					} catch (Exception e) {
+					  e.printStackTrace();
+					  sendEmail(to, subject, msg);
 
-	              if (resendCounter != 0) {
-	                sendEmail(to, subject, msg);
-	                resendCounter--;
-	              }
-	              if (resendCounter == 0) {
-	                System.out.println(
-	                  "Attempted to send 5 Times but it failed...."
-	                );
-	              }
-	            }
-	          }
-	        }
-	      );
+					  if (resendCounter != 0) {
+						sendEmail(to, subject, msg);
+						resendCounter--;
+					  }
+					  if (resendCounter == 0) {
+						log.info("Attempted to send 5 Times but it failed....");
+					  }
+					}
+				  }
+		  );
 
 	      thread.start();
 	    } catch (Exception e) {
