@@ -24,7 +24,7 @@ spring:
 
     datasource:
         username: root
-        password: Ikejianwa@01
+        password: root
         url: jdbc:mysql://localhost:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
         driverClassName: com.mysql.cj.jdbc.Driver
         initialization-mode: always
