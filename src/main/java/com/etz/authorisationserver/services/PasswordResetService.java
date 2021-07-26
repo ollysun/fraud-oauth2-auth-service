@@ -9,6 +9,7 @@ import java.util.Date;
 
 import com.etz.authorisationserver.dto.request.ChangePasswordRequestModel;
 import com.etz.authorisationserver.dto.request.PasswordDto;
+import com.etz.authorisationserver.dto.request.ResetTokenRequestModel;
 import com.etz.authorisationserver.exception.AuthServiceException;
 import com.etz.authorisationserver.util.AESUtil;
 import com.etz.authorisationserver.util.AppUtil;
@@ -45,9 +46,10 @@ public class PasswordResetService {
 	private PasswordEncoder passwordEncoder;
 	
 	@Transactional
-    public Boolean resetUserPassword(String email, String username) {
+    public Boolean resetUserPassword(ResetTokenRequestModel resetTokenRequestModel) {
     	//validate user credential with username and email
-    	UserEntity userOptional = userRepository.findByEmailOrUsername(email, username)
+    	UserEntity userOptional = userRepository.findByEmailOrUsername(resetTokenRequestModel.getEmail(),
+				resetTokenRequestModel.getUsername())
 				.orElseThrow(() -> new ResourceNotFoundException("No user found with this credential"));
 
     	//generate token and send to the supplied email then return true(Boolean.true)
@@ -72,7 +74,7 @@ public class PasswordResetService {
 		}
 		//autowire emailsender service and call its sendmail()
     	 String link = "<html><body><a href=\"http://localhost:9191/api/v1/password/reset?user="+encryptUserDetail +"\">click on the link below</a></body></html>";
-    	 emailSenderService.sendEmail(email, "token generation request", "token "+tokenGenerated+" has been generated.\n"+ link);
+    	 emailSenderService.sendEmail(resetTokenRequestModel.getEmail(), "token generation request", "token "+tokenGenerated+" has been generated.\n"+ link);
     	 return Boolean.TRUE;//return true in the end
     	
 	}
@@ -81,7 +83,7 @@ public class PasswordResetService {
     	ResetPasswordTokens passToken = AppUtil.validatePasswordResetToken(encryptUserDetail);
 		passToken.setConsumed(Boolean.TRUE);
 		resetPasswordRepository.save(passToken);
-		//todo: tunde to provide redirecturl and pass encrypt userdetail as queryparam;
+		//TODO: tunde to provide redirecturl and pass encrypt userdetail as queryparam;
 		return "redirect url";
 	}
 
@@ -101,7 +103,7 @@ public class PasswordResetService {
 		userEntity.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
 		userRepository.save(userEntity);
 
-    	
+		//TODO: Notify user of new password
     	return Boolean.TRUE;
     }
     
@@ -116,6 +118,7 @@ public class PasswordResetService {
 		}
 		user.setPassword(passwordEncoder.encode(changePasswordRequestModel.getNewPassword()));
 		userRepository.save(user);
+		//TODO: Notify user of new password
 		return Boolean.TRUE;
 	}
 }

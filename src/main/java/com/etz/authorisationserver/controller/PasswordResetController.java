@@ -31,7 +31,7 @@ public class PasswordResetController {
 
 	@PostMapping("/forget")
 	public ResponseEntity<BooleanResponse> requestPasswordReset(@RequestBody @Valid ResetTokenRequestModel resetTokenRequest) {
-		BooleanResponse response = new BooleanResponse(passwordResetService.resetUserPassword(resetTokenRequest.getEmail(), resetTokenRequest.getUserName()));
+		BooleanResponse response = new BooleanResponse(passwordResetService.resetUserPassword(resetTokenRequest));
 		return new ResponseEntity<>(response , HttpStatus.OK);
 	}
 	    

@@ -1,31 +1,16 @@
 package com.etz.authorisationserver.util;
 
-import com.etz.authorisationserver.exception.AuthServiceException;
-import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.BadPaddingException;
 import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.SealedObject;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-
 import java.security.SecureRandom;
 
 public class AESUtil {
