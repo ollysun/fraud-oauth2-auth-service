@@ -61,6 +61,11 @@ public class UserEntity extends BaseEntity implements Serializable {
 	
 >>>>>>> parent of 2b27667 (implement password mangement)
 	@ToString.Exclude
+	@OneToMany(mappedBy = "userId",fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ResetPasswordTokens> resetPasswordTokens =new ArrayList<>();
+	
+	@ToString.Exclude
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role",
 			joinColumns = {@JoinColumn(name = "user_id")},

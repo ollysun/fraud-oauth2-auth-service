@@ -23,9 +23,9 @@ spring:
             type: web
 
     datasource:
-        username: root
-        password: root
-        url: jdbc:mysql://localhost:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
+        username: eagleeye_user
+        password: T@w!d2021
+        url: jdbc:mysql://172.17.10.83:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
         driverClassName: com.mysql.cj.jdbc.Driver
         initialization-mode: always
         data: classpath:data.sql
@@ -84,4 +84,25 @@ hystrix:
             circuitBreaker.sleepWindowInMilliseconds: 20000
             circuitBreaker.requestVolumeThreshold: 10
 
-
+#==================================================
+  #  Mail Configuration                      #
+  #==================================================
+mail:
+  #host: smtp.office365.com
+  smtp: smtp.gmail.com
+  username: ikejianwaleo@gmail.com
+  password: $Ike08067950474
+  sender: ETZ-EAGLE-EYE-MANAGER
+  port: 587
+  properties:
+    debug: true
+    mail:
+      defaultEncoding: UTF-8
+      smtp:
+        connectiontimeout: 5000
+        timeout: 5000
+        writetimeout: 5000
+        auth: true
+        starttls:
+          enable: true
+  protocol: smtp

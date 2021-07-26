@@ -1,7 +1,9 @@
 package com.etz.authorisationserver.exception;
 
 public class AuthServiceException extends RuntimeException{
-    public AuthServiceException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public AuthServiceException(String message) {
         super(message);
     }
 }
