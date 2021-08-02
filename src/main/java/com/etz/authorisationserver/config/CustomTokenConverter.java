@@ -24,7 +24,7 @@ public class CustomTokenConverter extends JwtAccessTokenConverter {
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
         UserEntity user = securityUser.getUser();
         additionalInfo.put("role", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
-        additionalInfo.put("userId", user.getId());
+        additionalInfo.put("userId", securityUser.getUser().getId());
 
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
         accessToken = super.enhance(accessToken, authentication);

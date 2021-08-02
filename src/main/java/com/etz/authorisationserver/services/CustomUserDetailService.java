@@ -31,18 +31,21 @@ public class CustomUserDetailService implements UserDetailsService {
         UserEntity user = userRepository.findByUsernameAndDeletedFalseAndStatusTrue(username);
         if (user == null)
             throw new UsernameNotFoundException("Could not find UserEntity");
-        return new SecurityUser(user, getAuthorities(user.getRoles()));
+        return new SecurityUser(user, getAuthorities(user.getRoles(), user));
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
-        return getGrantedAuthorities(getPermissions(roles));
+    private Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles, UserEntity user) {
+        return getGrantedAuthorities(getPermissions(roles, user));
     }
 
-    private List<String> getPermissions(final Collection<Role> roles) {
+    private List<String> getPermissions(final Collection<Role> roles, UserEntity user) {
         final List<String> permissions = new ArrayList<>();
         final List<PermissionEntity> collection = new ArrayList<>();
         for (final Role role : roles) {
             collection.addAll(role.getRolePermissionEntities());
+        }
+        if (!user.getPermissionEntities().isEmpty()) {
+            collection.addAll(user.getPermissionEntities());
         }
         for (final PermissionEntity item : collection) {
             permissions.add(item.getName());

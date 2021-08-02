@@ -1,6 +1,7 @@
 package com.etz.authorisationserver.config;
 
 import com.etz.authorisationserver.services.CustomUserDetailService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
@@ -25,6 +27,7 @@ import java.util.Collections;
 @Slf4j
 @Configuration
 @EnableAuthorizationServer
+@RequiredArgsConstructor
 public class AuthorisationServerConfig
         extends AuthorizationServerConfigurerAdapter {
 
@@ -32,21 +35,10 @@ public class AuthorisationServerConfig
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailService userDetailsService;
-    @Autowired
     private final JdbcTokenStores jdbcTokenStores;
 
     @Value("${security.secret-key}")
     private String secretKey;
-
-    public AuthorisationServerConfig(DataSource dataSource, PasswordEncoder passwordEncoder,
-                                     AuthenticationManager authenticationManager,
-                                     CustomUserDetailService userDetailsService, JdbcTokenStores jdbcTokenStores) {
-        this.dataSource = dataSource;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
-        this.jdbcTokenStores = jdbcTokenStores;
-    }
 
     @Bean
     @Primary
@@ -92,6 +84,10 @@ public class AuthorisationServerConfig
                 .checkTokenAccess("isAuthenticated()");//check if generated token is authenticated
     }
 
+    @Bean
+    public OAuth2AccessDeniedHandler oauthAccessDeniedHandler() {
+        return new OAuth2AccessDeniedHandler();
+    }
 
 
 }

@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByUsername(String username);
     List<UserEntity> findByStatus(Boolean statusVal);
 
-    Optional<UserEntity> findByEmailOrUsername(String email, String username);
+    Optional<UserEntity> findByEmailAndUsername(String email, String username);
 
     UserEntity findByUsernameAndDeletedFalseAndStatusTrue(String username);
     

@@ -12,10 +12,12 @@ import com.etz.authorisationserver.repository.RoleRepository;
 import com.etz.authorisationserver.repository.UserRoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,7 +35,7 @@ public class RoleService {
     @Autowired
     private UserRoleRepository userRoleRepository;
 
-
+    @PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public RoleResponse createRole(CreateRoleRequest createRoleRequest) {
         Role role = new Role();
@@ -73,6 +75,8 @@ public class RoleService {
         return permissionNameList;
     }
 
+
+    @PreAuthorize("hasAnyAuthority('ROLE.UPDATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
         Role roleOptional = new Role();
@@ -88,7 +92,7 @@ public class RoleService {
         Role updatedRole =  roleRepository.save(roleOptional);
         List<RolePermission> previousRolePermissionList = rolePermissionRepository.findByRoleId(updatedRole.getId());
 
-        deletePermission(previousRolePermissionList,updateRoleRequest.getPermissions());
+        deleteExistingPermission(previousRolePermissionList,updateRoleRequest.getPermissions());
 
         updateRoleRequest.getPermissions().forEach(rolePermissionObject ->{
             PermissionEntity permissionEntity = permissionRepository.findById(rolePermissionObject)
@@ -115,23 +119,22 @@ public class RoleService {
         return duplicateList;
     }
 
-    private void deletePermission(List<RolePermission> previousRolePermissionList, List<Long> permissions) {
+    private void deleteExistingPermission(List<RolePermission> previousRolePermissionList, List<Long> permissionIds) {
         // get previous user permissions IDs
         List<Long> previousRolePermissionId = new ArrayList<>();
         previousRolePermissionList.forEach(rolePermEntity -> previousRolePermissionId.add(rolePermEntity.getPermissionId()));
-        // Take out duplicate from the permission
-        List<Long> duplicatePermissions = removeDuplicateInList(previousRolePermissionId,permissions);
 
-        if (!(duplicatePermissions.isEmpty())) {
-            // delete permission no longer needed
-            previousRolePermissionList.forEach(rolePermission -> duplicatePermissions.forEach(permissionId -> {
-                if (rolePermission.getPermissionId().equals(permissionId)) {
-                    rolePermissionRepository.delete(rolePermission);
-                }
-            }));
+        // check for common elements
+        if(Boolean.FALSE.equals(Collections.disjoint(previousRolePermissionId,permissionIds))){
+            //bring out the common elements for delete
+            List<Long> commonElements = previousRolePermissionId.stream()
+                    .filter(permissionIds::contains)
+                    .collect(Collectors.toList());
+            commonElements.forEach(commonElement -> rolePermissionRepository.deleteByPermissionIdPermanent(commonElement));
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE.READ')")
     @Transactional(readOnly = true)
     public List<RoleResponse> getRoles(Long roleId, Boolean activatedStatus) {
         List<Role> roleList = new ArrayList<>();
@@ -169,6 +172,7 @@ public class RoleService {
         return permissionsList;
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE.DELETE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean deleteRoleInTransaction(Long roleId) {
         Role role = roleRepository.findById(roleId)
