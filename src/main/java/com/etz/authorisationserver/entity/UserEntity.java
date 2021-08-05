@@ -53,16 +53,7 @@ public class UserEntity extends BaseEntity implements Serializable {
 
 	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;
-<<<<<<< HEAD
 
-=======
-	
-	@OneToMany(mappedBy = "userId",fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL, orphanRemoval = true)
-	@ToString.Exclude
-	private List<ResetPasswordTokens> resetPasswordTokens;
-	
->>>>>>> parent of 2b27667 (implement password mangement)
 	@ToString.Exclude
 	@OneToMany(mappedBy = "userId",fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL, orphanRemoval = true)
