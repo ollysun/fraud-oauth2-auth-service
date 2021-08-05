@@ -85,7 +85,7 @@ public class UserEntityService {
                 }
             });
             userPermissionRepository.saveAll(userPermissionList);
-            log.info("userpermission " + userPermissionList);
+         //   log.info("userpermission " + userPermissionList);
         }
         return outputUserResponse(user, createUserRequest);
     }
@@ -260,7 +260,7 @@ public class UserEntityService {
                 userPermissionRepository.deleteByUserId(userPermissionList.get(0).getUserId());
             }
         } catch (Exception ex) {
-            log.error("Error occurred while deleting User entity from database", ex);
+        //    log.error("Error occurred while deleting User entity from database", ex);
             throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
         }
         return Boolean.TRUE;

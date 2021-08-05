@@ -96,7 +96,7 @@ public class PermissionService {
             userPermissionRepository.deleteByPermissionId(userPermissionList.get(0).getPermissionId());
             rolePermissionRepository.deleteByPermissionId(rolePermissionList.get(0).getPermissionId());
         } catch (Exception ex) {
-            log.error("Error occurred while deactivating Permission entity from database", ex);
+        //    log.error("Error occurred while deactivating Permission entity from database", ex);
             throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
         }
 

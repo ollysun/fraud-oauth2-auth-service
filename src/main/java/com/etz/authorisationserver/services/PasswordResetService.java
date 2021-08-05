@@ -68,7 +68,7 @@ public class PasswordResetService {
 		try {
 			encryptUserDetail = AESUtil.encrypt(userOptional.getId()+"-"+tokenGenerated);
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-			log.debug(e.getMessage());
+			//log.debug(e.getMessage());
 			throw new AuthServiceException(e.getMessage());
 		}
 		//autowire emailsender service and call its sendmail()

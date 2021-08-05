@@ -181,7 +181,7 @@ public class RoleService {
                 }
             }
         } catch (Exception ex) {
-            log.error("Error occurred while deleting User entity from database", ex);
+        //    log.error("Error occurred while deleting User entity from database", ex);
             throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
         }
         return Boolean.TRUE;

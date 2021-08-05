@@ -13,6 +13,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.etz.authorisationserver.exception.AuthServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -129,7 +130,7 @@ public class EmailSenderService {
 
 	      thread.start();
 	    } catch (Exception e) {
-	      throw new RuntimeException(e);
+	      throw new AuthServiceException(e.getMessage());
 	    }
 	  }
 }
