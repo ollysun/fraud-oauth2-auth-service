@@ -6,9 +6,11 @@ import com.etz.authorisationserver.dto.response.CollectionResponse;
 import com.etz.authorisationserver.dto.response.ModelResponse;
 import com.etz.authorisationserver.dto.response.PermissionEntityResponse;
 import com.etz.authorisationserver.services.PermissionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,10 +19,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/permissions")
+@RequiredArgsConstructor
+@Validated
 public class PermissionController {
 
-    @Autowired
-    private PermissionService permissionService;
+    private final PermissionService permissionService;
 
     @GetMapping
     public ResponseEntity<CollectionResponse<PermissionEntityResponse>> getPermissions(
@@ -32,8 +35,8 @@ public class PermissionController {
     }
 
     @PostMapping
-    public ResponseEntity<ModelResponse<PermissionEntityResponse>> createPermission(@RequestBody @Valid CreatePermissionRequest request){
-        ModelResponse<PermissionEntityResponse> response = new ModelResponse<>(permissionService.createPermission(request));
+    public ResponseEntity<ModelResponse<PermissionEntityResponse>> addPermission(@RequestBody @Valid CreatePermissionRequest request){
+        ModelResponse<PermissionEntityResponse> response = new ModelResponse<>(permissionService.addPermission(request));
         response.setStatus(HttpStatus.CREATED.value());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

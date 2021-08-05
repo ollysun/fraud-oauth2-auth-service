@@ -35,9 +35,9 @@ public class RoleService {
     @Autowired
     private UserRoleRepository userRoleRepository;
 
-    @PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
+    //@PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
-    public RoleResponse createRole(CreateRoleRequest createRoleRequest) {
+    public RoleResponse addRole(CreateRoleRequest createRoleRequest) {
         Role role = new Role();
         role.setName(createRoleRequest.getRoleName());
         role.setDescription(createRoleRequest.getDescription());
@@ -76,7 +76,7 @@ public class RoleService {
     }
 
 
-    @PreAuthorize("hasAnyAuthority('ROLE.UPDATE','ROLE.APPROVE')")
+    //@PreAuthorize("hasAnyAuthority('ROLE.UPDATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
         Role roleOptional = new Role();
@@ -109,22 +109,13 @@ public class RoleService {
         return true;
     }
 
-    private List<Long> removeDuplicateInList(List<Long> listOne, List<Long> listTwo){
-        List<Long> duplicateList = new ArrayList<>();
-        for (Long numberVal : listOne) {
-            if (listTwo.contains(numberVal)) {
-                duplicateList.add(numberVal);
-            }
-        }
-        return duplicateList;
-    }
 
     private void deleteExistingPermission(List<RolePermission> previousRolePermissionList, List<Long> permissionIds) {
         // get previous user permissions IDs
         List<Long> previousRolePermissionId = new ArrayList<>();
         previousRolePermissionList.forEach(rolePermEntity -> previousRolePermissionId.add(rolePermEntity.getPermissionId()));
 
-        // check for common elements
+        // check for common elements if exists
         if(Boolean.FALSE.equals(Collections.disjoint(previousRolePermissionId,permissionIds))){
             //bring out the common elements for delete
             List<Long> commonElements = previousRolePermissionId.stream()
@@ -134,7 +125,7 @@ public class RoleService {
         }
     }
 
-    @PreAuthorize("hasAuthority('ROLE.READ')")
+   // @PreAuthorize("hasAuthority('ROLE.READ')")
     @Transactional(readOnly = true)
     public List<RoleResponse> getRoles(Long roleId, Boolean activatedStatus) {
         List<Role> roleList = new ArrayList<>();
@@ -172,7 +163,7 @@ public class RoleService {
         return permissionsList;
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE.DELETE','ROLE.APPROVE')")
+    //@PreAuthorize("hasAnyAuthority('ROLE.DELETE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean deleteRoleInTransaction(Long roleId) {
         Role role = roleRepository.findById(roleId)

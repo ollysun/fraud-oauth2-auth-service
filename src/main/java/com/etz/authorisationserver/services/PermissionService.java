@@ -32,7 +32,7 @@ public class PermissionService {
     @Autowired
     private RolePermissionRepository rolePermissionRepository;
 
-    @PreAuthorize("hasAuthority('PERMISSION.READ')")
+    //@PreAuthorize("hasAuthority('PERMISSION.READ')")
     @Transactional(readOnly = true)
     public List<PermissionEntityResponse> getAllPermissions(Long permissionId, Boolean activatedStatus) {
         List<PermissionEntity> permissionEntityList = new ArrayList<>();
@@ -63,9 +63,9 @@ public class PermissionService {
         return permissionResponseList;
     }
 
-    @PreAuthorize("hasAuthority('PERMISSION.CREATE')")
+    //@PreAuthorize("hasAuthority('PERMISSION.CREATE')")
     @Transactional(rollbackFor = Throwable.class)
-    public PermissionEntityResponse createPermission(CreatePermissionRequest createPermissionRequest) {
+    public PermissionEntityResponse addPermission(CreatePermissionRequest createPermissionRequest) {
         PermissionEntity permissionEntity = new PermissionEntity();
         permissionEntity.setName(createPermissionRequest.getName());
         permissionEntity.setStatus(Boolean.TRUE);
@@ -82,7 +82,7 @@ public class PermissionService {
                     .build();
     }
 
-    @PreAuthorize("hasAuthority('PERMISSION.DELETE')")
+   // @PreAuthorize("hasAuthority('PERMISSION.DELETE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean deletePermissionInTransaction(Long permissionId) {
         PermissionEntity permissionEntity = iPermissionRepository.findById(permissionId)

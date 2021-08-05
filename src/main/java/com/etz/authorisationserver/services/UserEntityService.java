@@ -40,7 +40,7 @@ public class UserEntityService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
+    //@PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public UserResponse createUser(CreateUserRequest createUserRequest){
         List<UserPermission> userPermissionList = new ArrayList<>();
@@ -116,7 +116,7 @@ public class UserEntityService {
         return permissionNames;
     }
 
-    @PreAuthorize("hasAnyAuthority('USER.UPDATE','USER.APPROVE')")
+    //@PreAuthorize("hasAnyAuthority('USER.UPDATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean updateUser(UpdateUserRequest updateUserRequest){
 
@@ -145,7 +145,7 @@ public class UserEntityService {
                 //delete previous role to enforce one user and one role
                 UserRole deletedPreviousUserRole = userRoleRepository.findByUserId(updateUserRequest.getUserId());
                 if(deletedPreviousUserRole != null) {
-                    userRoleRepository.deleteByUserId(deletedPreviousUserRole.getUserId());
+                    userRoleRepository.delete(deletedPreviousUserRole);
                 }
                 UserRole previousUserRoleList = new UserRole();
                 previousUserRoleList.setRoleId(updateUserRequest.getRoleId());
@@ -191,7 +191,7 @@ public class UserEntityService {
         }
     }
 
-    @PreAuthorize("hasAuthority('USER.READ')")
+    //@PreAuthorize("hasAuthority('USER.READ')")
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<UserEntity> userList = new ArrayList<>();
@@ -244,7 +244,7 @@ public class UserEntityService {
         return userRole.getRoleId();
     }
 
-    @PreAuthorize("hasAnyAuthority('USER.DELETE','USER.APPROVE')")
+    //@PreAuthorize("hasAnyAuthority('USER.DELETE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean deleteUserInTransaction(Long userId) {
         UserEntity user = userRepository.findById(userId)
