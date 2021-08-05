@@ -9,12 +9,14 @@ import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,6 +40,7 @@ public class UserEntityService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    //@PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public UserResponse createUser(CreateUserRequest createUserRequest){
         List<UserPermission> userPermissionList = new ArrayList<>();
@@ -113,6 +116,7 @@ public class UserEntityService {
         return permissionNames;
     }
 
+    //@PreAuthorize("hasAnyAuthority('USER.UPDATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean updateUser(UpdateUserRequest updateUserRequest){
 
@@ -141,7 +145,7 @@ public class UserEntityService {
                 //delete previous role to enforce one user and one role
                 UserRole deletedPreviousUserRole = userRoleRepository.findByUserId(updateUserRequest.getUserId());
                 if(deletedPreviousUserRole != null) {
-                    userRoleRepository.deleteByUserId(deletedPreviousUserRole.getUserId());
+                    userRoleRepository.delete(deletedPreviousUserRole);
                 }
                 UserRole previousUserRoleList = new UserRole();
                 previousUserRoleList.setRoleId(updateUserRequest.getRoleId());
@@ -155,7 +159,7 @@ public class UserEntityService {
                 && !(updateUserRequest.getPermissionIds().isEmpty())) {
             List<UserPermission> previousUserPermissionList = userPermissionRepository.findByUserId(updatedUser.getId());
 
-            deleteUserPermission(previousUserPermissionList, updateUserRequest.getPermissionIds());
+            deleteExistingUserPermission(previousUserPermissionList, updateUserRequest.getPermissionIds());
 
             for (Long permissionId : updateUserRequest.getPermissionIds()) {
                 PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
@@ -173,36 +177,21 @@ public class UserEntityService {
         return true;
     }
 
-
-
-    private List<Long> removeDuplicateInList(List<Long> listOne, List<Long> listTwo){
-        List<Long> duplicateList = new ArrayList<>();
-        for (Long numberVal : listOne) {
-            if (listTwo.contains(numberVal)) {
-                duplicateList.add(numberVal);
-            }
-        }
-        return duplicateList;
-    }
-
-    private void deleteUserPermission(List<UserPermission> previousUserPerm, List<Long> permissions) {
+    private void deleteExistingUserPermission(List<UserPermission> previousUserPerm, List<Long> permissionIds) {
         // get previous user permissions IDs
         List<Long> previousUserPermissionIds = new ArrayList<>();
         previousUserPerm.forEach(userPermEntity -> previousUserPermissionIds.add(userPermEntity.getPermissionId()));
-
-        List<Long> duplicatePermissions = removeDuplicateInList(previousUserPermissionIds,permissions);
-
-        if (!(duplicatePermissions.isEmpty())) {
-            // delete permissions no longer needed
-            previousUserPerm.forEach(userPerm -> duplicatePermissions.forEach(permissionId -> {
-                if (userPerm.getPermissionId().equals(permissionId)) {
-                    userPermissionRepository.delete(userPerm);
-                }
-            }));
+        // check for common elements
+        if(Boolean.FALSE.equals(Collections.disjoint(previousUserPermissionIds,permissionIds))){
+            //bring out the common elements for delete
+            List<Long> commonElements = previousUserPermissionIds.stream()
+                                                                 .filter(permissionIds::contains)
+                                                                 .collect(Collectors.toList());
+            commonElements.forEach(commonElement -> userPermissionRepository.deleteByPermissionIdPermanent(commonElement));
         }
     }
 
-
+    //@PreAuthorize("hasAuthority('USER.READ')")
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<UserEntity> userList = new ArrayList<>();
@@ -255,6 +244,7 @@ public class UserEntityService {
         return userRole.getRoleId();
     }
 
+    //@PreAuthorize("hasAnyAuthority('USER.DELETE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean deleteUserInTransaction(Long userId) {
         UserEntity user = userRepository.findById(userId)
@@ -277,5 +267,6 @@ public class UserEntityService {
     }
 
 
+    
 
 }

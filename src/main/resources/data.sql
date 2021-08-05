@@ -13,7 +13,7 @@ INSERT INTO oauth_client_details
       scope, authorized_grant_types,web_server_redirect_uri, authorities, access_token_validity,
       refresh_token_validity, additional_information, autoapprove)
 VALUES ('clientId', 'fraud-engine','$2a$10$vCXMWCn7fDZWOcLnIEhmK.74dvK1Eh8ae2WrWlhr2ETPLoxQctN4.',
-'read', 'password,authorization_code,refresh_token', null,'ROLE_CLIENT,ROLE_TRUSTED_CLIENT', 360000,
+'read,write', 'password,authorization_code,refresh_token', null,'ROLE_CLIENT,ROLE_TRUSTED_CLIENT', 360000,
  360000,null,true);
 
 INSERT INTO oauth_client_details
@@ -79,6 +79,8 @@ insert into permission(name, status) values("RULE.PRODUCT.UNMAP",1);
 insert into permission(name, status) values("RULE.PRODUCT.APPROVE",1);
 insert into permission(name, status) values("PERMISSION.READ",1);
 insert into permission(name, status) values("PERMISSION.ASSIGN",1);
+insert into permission(name, status) values("PERMISSION.CREATE",1);
+insert into permission(name, status) values("PERMISSION.DELETE",1);
 insert into permission(name, status) values("ROLE.CREATE",1);
 insert into permission(name, status) values("ROLE.READ",1);
 insert into permission(name, status) values("ROLE.UPDATE",1);
@@ -121,7 +123,7 @@ INSERT INTO authorisation_service.`user_role`(`user_id`,`role_id`) VALUES (3,2);
 
 /* Insert Data into UserPermission Table  */
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,1);
-insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(2,2);
+insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(2,40);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,1);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(1,4);
 insert into authorisation_service.user_permission(`user_id`,`permission_id`) values(3,5);

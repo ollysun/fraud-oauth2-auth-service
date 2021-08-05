@@ -1,9 +1,11 @@
 package com.etz.authorisationserver.controller;
 
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
+import com.etz.authorisationserver.dto.request.ResetTokenRequestModel;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
 import com.etz.authorisationserver.dto.response.*;
 import com.etz.authorisationserver.services.UserEntityService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,19 +19,24 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/v1/users")
+@RequiredArgsConstructor
+@Validated
 public class UserController {
 
-    @Autowired
-    private UserEntityService userService;
+
+    private final UserEntityService userService;
 
     @PostMapping
-    public ResponseEntity<ModelResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest request){
+    public ResponseEntity<ModelResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest request) {
         ModelResponse<UserResponse> response = new ModelResponse<>(userService.createUser(request));
         response.setStatus(HttpStatus.CREATED.value());
         response.setMessage("UserEntity Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
+    
+    
+    
+    
     @GetMapping
     public ResponseEntity<CollectionResponse<UserResponse>> getUser(
                   @RequestParam(name = "userId", required = false) Long userId,
@@ -51,9 +58,11 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+
     @DeleteMapping("/{id}")
     public BooleanResponse deleteUser(@PathVariable Long id){
         return new BooleanResponse(userService.deleteUserInTransaction(id));
     }
+
 
 }

@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
 @Entity
-@Table(name = "user")
+@Table(name = "user",
+		uniqueConstraints={
+				@UniqueConstraint(name="UserEntityUniqueUsernameConstraints", columnNames = "username"),
+				@UniqueConstraint(columnNames = "email", name="UserEntityUniqueEmailConstraints"),
+				@UniqueConstraint(columnNames = "phone", name="UserEntityUniquePhoneConstraints"),
+				@UniqueConstraint(name="UserEntityUniquePasswordConstraints", columnNames =  "password")})
 @Getter
 @Setter
 @ToString
@@ -23,10 +27,10 @@ public class UserEntity extends BaseEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "username", unique = true, length = 250)
+	@Column(name = "username",  length = 250)
 	private String username;
 
-	@Column(name = "password", columnDefinition = "TEXT",nullable = false, unique = true)
+	@Column(name = "password", columnDefinition = "TEXT",nullable = false)
 	private String password;
 
 	@Column(name = "first_name")
@@ -35,11 +39,10 @@ public class UserEntity extends BaseEntity implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@Column(name = "phone", unique = true, length = 200)
+	@Column(name = "phone", length = 200)
 	private String phone;
 
-
-	@Column(name = "email", unique = true, length = 250)
+	@Column(name = "email",  length = 250)
 	private String email;
 
 	@Column( name = "has_Role", columnDefinition = "TINYINT default true", length = 1, nullable = false)
@@ -51,6 +54,11 @@ public class UserEntity extends BaseEntity implements Serializable {
 	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;
 
+	@ToString.Exclude
+	@OneToMany(mappedBy = "userId",fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ResetPasswordTokens> resetPasswordTokens =new ArrayList<>();
+	
 	@ToString.Exclude
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role",

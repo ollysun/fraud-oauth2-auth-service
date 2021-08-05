@@ -25,4 +25,10 @@ public interface UserPermissionRepository extends JpaRepository<UserPermission, 
     @Modifying
     @Query("Update UserPermission u set deleted = true Where u.permissionId = ?1")
     void deleteByPermissionId(Long permissionId);
+
+    @Transactional
+    @Modifying
+    @Query("Delete From UserPermission u Where u.permissionId = ?1")
+    void deleteByPermissionIdPermanent(Long permissionId);
 }
+

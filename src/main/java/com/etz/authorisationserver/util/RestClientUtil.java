@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class ApiUtil {
+public class RestClientUtil {
 	
 	@Autowired
 	private static RestTemplate restTemplate;
