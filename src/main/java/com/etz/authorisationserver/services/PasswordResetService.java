@@ -42,13 +42,12 @@ public class PasswordResetService {
 	private final UserRepository userRepository;
 	private final ResetPasswordRepository resetPasswordRepository;
 	private final EmailSenderService emailSenderService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	
 	@Transactional
     public Boolean resetUserPassword(ResetTokenRequestModel resetTokenRequestModel) {
     	//validate user credential with username and email
-    	UserEntity userOptional = userRepository.findByEmailOrUsername(resetTokenRequestModel.getEmail(),
+    	UserEntity userOptional = userRepository.findByEmailAndUsername(resetTokenRequestModel.getEmail(),
 				resetTokenRequestModel.getUsername())
 				.orElseThrow(() -> new ResourceNotFoundException("No user found with this credential"));
 
@@ -81,7 +80,6 @@ public class PasswordResetService {
 
 	public String showChangePasswordPage(String encryptUserDetail){
     	ResetPasswordTokens passToken = AppUtil.validatePasswordResetToken(encryptUserDetail);
-		passToken.setConsumed(Boolean.TRUE);
 		resetPasswordRepository.save(passToken);
 		//TODO: tunde to provide redirecturl and pass encrypt userdetail as queryparam;
 		return "redirect url";

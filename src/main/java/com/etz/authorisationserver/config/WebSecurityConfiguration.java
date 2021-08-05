@@ -1,6 +1,7 @@
 package com.etz.authorisationserver.config;
 
 import com.etz.authorisationserver.services.CustomUserDetailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,40 +27,43 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private final CustomUserDetailService customUserDetailService;
 
 	private static final String[] SWAGGER_WHITELIST = {
             // -- swagger ui
             "/swagger", "/v2/api-docs", "/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/actuator/health",
             "/configuration/security", "/swagger-ui.html", "/webjars/**" };
 
-    @Bean
-    @Override
-    public UserDetailsService userDetailsService(){
-        return new CustomUserDetailService();
-    }
+//    @Bean
+//    @Override
+//    public UserDetailsService userDetailsService(){
+//        return new CustomUserDetailService();
+//    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {//details of a user are fetched from the db for authentication
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setUserDetailsService(customUserDetailService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService())
+        auth.userDetailsService(customUserDetailService)
                 .passwordEncoder(passwordEncoder());
     }
 
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http
-
-                // Disabling CSRF protection due to stateless authentication
-                .csrf().disable();
+        // Disabling CSRF protection due to stateless authentication
+        http .csrf().disable();
+                // be stateless we do not allow cookie use oauth2  jwt
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
                 .antMatchers("/health","/info", "/trace", "/monitoring",

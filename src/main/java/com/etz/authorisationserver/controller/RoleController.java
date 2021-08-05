@@ -4,9 +4,11 @@ import com.etz.authorisationserver.dto.request.CreateRoleRequest;
 import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
 import com.etz.authorisationserver.dto.response.*;
 import com.etz.authorisationserver.services.RoleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,14 +16,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/roles")
+@RequiredArgsConstructor
+@Validated
 public class RoleController {
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<ModelResponse<RoleResponse>> createRole(@RequestBody @Valid CreateRoleRequest request){
-        ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.createRole(request));
+    public ResponseEntity<ModelResponse<RoleResponse>> addRole(@RequestBody @Valid CreateRoleRequest request){
+        ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.addRole(request));
         response.setStatus(HttpStatus.CREATED.value());
         response.setMessage("Role Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
