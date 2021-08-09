@@ -99,7 +99,7 @@ public class PasswordResetService {
 
 		UserEntity userEntity = passToken.getUserId();
 		userEntity.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
-		userRepository.save(userEntity);
+		//userRepository.save(userEntity);
 
 		//TODO: Notify user of new password
     	return Boolean.TRUE;

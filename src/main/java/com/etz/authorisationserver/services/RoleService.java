@@ -43,7 +43,8 @@ public class RoleService {
         role.setDescription(createRoleRequest.getDescription());
         role.setStatus(Boolean.TRUE);
         role.setCreatedBy(createRoleRequest.getCreatedBy());
-        Role createdRole = roleRepository.save(role);
+        Role createdRole = new Role();
+//        Role createdRole = roleRepository.save(role);
         if(!(createRoleRequest.getPermissionList().isEmpty())) {
             for (Long permissionId : createRoleRequest.getPermissionList()) {
                 PermissionEntity permissionEntity = permissionRepository.findById(permissionId)

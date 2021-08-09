@@ -22,7 +22,7 @@ public interface PermissionRepository extends JpaRepository<PermissionEntity, Lo
     @Transactional
     @Modifying
     @Query("Update PermissionEntity r set deleted = true, status=0 Where r.id = ?1")
-    void deleteByPermissionId(Long Id);
+    void deleteByPermissionId(Long id);
 
 
 }
