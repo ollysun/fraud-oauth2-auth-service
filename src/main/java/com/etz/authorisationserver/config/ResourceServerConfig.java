@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -25,12 +27,35 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 	private static final String RESOURCE_ID = "fraud-engine";
 
+    private static final String[] SWAGGER_WHITELIST = {
+            // -- swagger ui
+            "/swagger", "/v2/api-docs", "/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/actuator/health",
+            "/configuration/security", "/swagger-ui.html", "/webjars/**" };
+
     @Value("${security.secret-key}")
     private String secretKey;
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
         resources.resourceId(RESOURCE_ID).tokenStore(tokenStore()).stateless(false);
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        // Disabling CSRF protection due to stateless authentication
+       // http.csrf().and().cors().disable();
+        // be stateless we do not allow cookie use oauth2  jwt
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.authorizeRequests()
+                .antMatchers("/health","/info", "/trace", "/monitoring",
+                        "/webjars/**","/swagger.html", "/api/v1/login","/api/oauth/client","/api/oauth/token")
+                .permitAll()
+                .antMatchers(SWAGGER_WHITELIST)
+                .permitAll();
+        http.authorizeRequests().antMatchers("/api/v1/**")
+                .authenticated();
+
     }
 
     @Bean

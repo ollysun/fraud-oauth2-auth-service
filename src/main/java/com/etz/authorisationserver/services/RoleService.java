@@ -53,7 +53,7 @@ public class RoleService {
                     rolePermission.setRoleId(createdRole.getId());
                     rolePermission.setPermissionId(permissionId);
                     rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
-                    rolePermissionRepository.save(rolePermission);
+               //     rolePermissionRepository.save(rolePermission);
                 }
             }
         }
@@ -89,7 +89,8 @@ public class RoleService {
             roleOptional.setStatus(updateRoleRequest.getStatus());
             roleOptional.setUpdatedBy(updateRoleRequest.getUpdatedBy());
         }
-        Role updatedRole =  roleRepository.save(roleOptional);
+        Role updatedRole = new Role();
+       // Role updatedRole =  roleRepository.save(roleOptional);
         List<RolePermission> previousRolePermissionList = rolePermissionRepository.findByRoleId(updatedRole.getId());
 
         deleteExistingPermission(previousRolePermissionList,updateRoleRequest.getPermissions());
@@ -102,7 +103,7 @@ public class RoleService {
                 rolePermission.setRoleId(updatedRole.getId());
                 rolePermission.setPermissionId(rolePermissionObject);
                 rolePermission.setUpdatedBy(updateRoleRequest.getUpdatedBy());
-                rolePermissionRepository.save(rolePermission);
+              //  rolePermissionRepository.save(rolePermission);
             }
         });
 

@@ -71,7 +71,9 @@ public class PermissionService {
         permissionEntity.setStatus(Boolean.TRUE);
         permissionEntity.setCreatedBy(createPermissionRequest.getCreatedBy());
 
-        PermissionEntity createPermissionEntity = iPermissionRepository.save(permissionEntity);
+        PermissionEntity createPermissionEntity = new PermissionEntity();
+
+       // PermissionEntity createPermissionEntity = iPermissionRepository.save(permissionEntity);
 
         return PermissionEntityResponse.builder()
                     .permissionId(createPermissionEntity.getId())

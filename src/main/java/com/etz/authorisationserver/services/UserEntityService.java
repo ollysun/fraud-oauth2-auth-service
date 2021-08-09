@@ -7,6 +7,7 @@ import com.etz.authorisationserver.entity.*;
 import com.etz.authorisationserver.exception.AuthServiceException;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,25 +21,20 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserEntityService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserPermissionRepository userPermissionRepository;
+    private final UserPermissionRepository userPermissionRepository;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    @Autowired
-    private PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     //@PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
@@ -57,8 +53,9 @@ public class UserEntityService {
         userRequest.setEmail(createUserRequest.getEmail());
         userRequest.setCreatedBy(createUserRequest.getCreatedBy());
 
-        UserEntity user = userRepository.save(userRequest);
-        if (Boolean.TRUE.equals(createUserRequest.getHasRole())
+        UserEntity user = new UserEntity();
+       // UserEntity user = userRepository.save(userRequest);
+        if (Boolean.compare(createUserRequest.getHasRole(), Boolean.TRUE) == 0
                 && Objects.nonNull(createUserRequest.getRoleId())){
             Role roleEntity = roleRepository.findById(createUserRequest.getRoleId())
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found for this Id " + createUserRequest.getRoleId()));
@@ -67,11 +64,11 @@ public class UserEntityService {
                 userRole.setRoleId(createUserRequest.getRoleId());
                 userRole.setUserId(user.getId());
                 userRole.setCreatedBy(createUserRequest.getCreatedBy());
-                userRoleRepository.save(userRole);
+           //     userRoleRepository.save(userRole);
             }
         }
 
-        if (Boolean.TRUE.equals(createUserRequest.getHasPermission())
+        if (Boolean.compare(createUserRequest.getHasPermission(), Boolean.TRUE) == 0
                 && !(createUserRequest.getPermissionIds().isEmpty())){
             createUserRequest.getPermissionIds().forEach(permissionId -> {
                 PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
@@ -84,7 +81,7 @@ public class UserEntityService {
                     userPermissionList.add(userPermission);
                 }
             });
-            userPermissionRepository.saveAll(userPermissionList);
+         //   userPermissionRepository.saveAll(userPermissionList);
          //   log.info("userpermission " + userPermissionList);
         }
         return outputUserResponse(user, createUserRequest);
@@ -134,8 +131,10 @@ public class UserEntityService {
             user.setStatus(updateUserRequest.getStatus());
             user.setUpdatedBy(updateUserRequest.getUpdatedBy());
         }
-        UserEntity updatedUser = userRepository.save(user);
+        UserEntity updatedUser = new UserEntity();
+        //UserEntity updatedUser = userRepository.save(user);
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())
+
                 && Objects.nonNull(updateUserRequest.getRoleId())){
 
             Role roleEntity = roleRepository.findById(updateUserRequest.getRoleId())
@@ -151,11 +150,11 @@ public class UserEntityService {
                 previousUserRoleList.setRoleId(updateUserRequest.getRoleId());
                 previousUserRoleList.setUserId(updateUserRequest.getUserId());
                 previousUserRoleList.setUpdatedBy(updateUserRequest.getUpdatedBy());
-                userRoleRepository.save(previousUserRoleList);
+           //     userRoleRepository.save(previousUserRoleList);
             }
         }
 
-        if (Boolean.TRUE.equals(updateUserRequest.getHasPermission())
+        if (Boolean.compare(updateUserRequest.getHasPermission(), Boolean.TRUE) == 0
                 && !(updateUserRequest.getPermissionIds().isEmpty())) {
             List<UserPermission> previousUserPermissionList = userPermissionRepository.findByUserId(updatedUser.getId());
 
@@ -169,7 +168,7 @@ public class UserEntityService {
                     userPermission.setUserId(updatedUser.getId());
                     userPermission.setPermissionId(permissionId);
                     userPermission.setUpdatedBy(updateUserRequest.getUpdatedBy());
-                    userPermissionRepository.save(userPermission);
+                //    userPermissionRepository.save(userPermission);
                 }
             }
 

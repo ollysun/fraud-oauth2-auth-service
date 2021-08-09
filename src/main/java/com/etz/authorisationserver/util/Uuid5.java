@@ -4,6 +4,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.UUID;
 
 public class Uuid5 {
@@ -15,12 +16,21 @@ public class Uuid5 {
         return fromBytes(name.getBytes(StandardCharsets.UTF_8));
     }
 
+    private static byte[] getSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return salt;
+    }
+
     private static UUID fromBytes(byte[] name) {
         if (name == null) {
             throw new NullPointerException("name == null");
         }
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(getSalt());
             return makeUUID(md.digest(name), 5);
         } catch (NoSuchAlgorithmException e) {
             throw new AssertionError(e);
