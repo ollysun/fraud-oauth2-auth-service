@@ -53,8 +53,7 @@ public class UserEntityService {
         userRequest.setEmail(createUserRequest.getEmail());
         userRequest.setCreatedBy(createUserRequest.getCreatedBy());
 
-        UserEntity user = new UserEntity();
-       // UserEntity user = userRepository.save(userRequest);
+        UserEntity user = userRepository.save(userRequest);
         if (Boolean.compare(createUserRequest.getHasRole(), Boolean.TRUE) == 0
                 && Objects.nonNull(createUserRequest.getRoleId())){
             Role roleEntity = roleRepository.findById(createUserRequest.getRoleId())
@@ -64,7 +63,7 @@ public class UserEntityService {
                 userRole.setRoleId(createUserRequest.getRoleId());
                 userRole.setUserId(user.getId());
                 userRole.setCreatedBy(createUserRequest.getCreatedBy());
-           //     userRoleRepository.save(userRole);
+                userRoleRepository.save(userRole);
             }
         }
 
@@ -81,8 +80,8 @@ public class UserEntityService {
                     userPermissionList.add(userPermission);
                 }
             });
-         //   userPermissionRepository.saveAll(userPermissionList);
-         //   log.info("userpermission " + userPermissionList);
+            userPermissionRepository.saveAll(userPermissionList);
+            log.info("userpermission " + userPermissionList);
         }
         return outputUserResponse(user, createUserRequest);
     }
@@ -131,8 +130,7 @@ public class UserEntityService {
             user.setStatus(updateUserRequest.getStatus());
             user.setUpdatedBy(updateUserRequest.getUpdatedBy());
         }
-        UserEntity updatedUser = new UserEntity();
-        //UserEntity updatedUser = userRepository.save(user);
+        UserEntity updatedUser = userRepository.save(user);
         if (Boolean.TRUE.equals(updateUserRequest.getHasRole())
 
                 && Objects.nonNull(updateUserRequest.getRoleId())){
@@ -150,7 +148,7 @@ public class UserEntityService {
                 previousUserRoleList.setRoleId(updateUserRequest.getRoleId());
                 previousUserRoleList.setUserId(updateUserRequest.getUserId());
                 previousUserRoleList.setUpdatedBy(updateUserRequest.getUpdatedBy());
-           //     userRoleRepository.save(previousUserRoleList);
+                userRoleRepository.save(previousUserRoleList);
             }
         }
 
@@ -168,7 +166,7 @@ public class UserEntityService {
                     userPermission.setUserId(updatedUser.getId());
                     userPermission.setPermissionId(permissionId);
                     userPermission.setUpdatedBy(updateUserRequest.getUpdatedBy());
-                //    userPermissionRepository.save(userPermission);
+                    userPermissionRepository.save(userPermission);
                 }
             }
 
@@ -259,7 +257,7 @@ public class UserEntityService {
                 userPermissionRepository.deleteByUserId(userPermissionList.get(0).getUserId());
             }
         } catch (Exception ex) {
-        //    log.error("Error occurred while deleting User entity from database", ex);
+            log.error("Error occurred while deleting User entity from database", ex);
             throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
         }
         return Boolean.TRUE;

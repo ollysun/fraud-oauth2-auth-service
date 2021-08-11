@@ -43,8 +43,8 @@ public class RoleService {
         role.setDescription(createRoleRequest.getDescription());
         role.setStatus(Boolean.TRUE);
         role.setCreatedBy(createRoleRequest.getCreatedBy());
-        Role createdRole = new Role();
-//        Role createdRole = roleRepository.save(role);
+    //    Role createdRole = new Role();
+        Role createdRole = roleRepository.save(role);
         if(!(createRoleRequest.getPermissionList().isEmpty())) {
             for (Long permissionId : createRoleRequest.getPermissionList()) {
                 PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
@@ -54,7 +54,7 @@ public class RoleService {
                     rolePermission.setRoleId(createdRole.getId());
                     rolePermission.setPermissionId(permissionId);
                     rolePermission.setCreatedBy(createRoleRequest.getCreatedBy());
-               //     rolePermissionRepository.save(rolePermission);
+                    rolePermissionRepository.save(rolePermission);
                 }
             }
         }
@@ -90,8 +90,8 @@ public class RoleService {
             roleOptional.setStatus(updateRoleRequest.getStatus());
             roleOptional.setUpdatedBy(updateRoleRequest.getUpdatedBy());
         }
-        Role updatedRole = new Role();
-       // Role updatedRole =  roleRepository.save(roleOptional);
+       // Role updatedRole = new Role();
+        Role updatedRole =  roleRepository.save(roleOptional);
         List<RolePermission> previousRolePermissionList = rolePermissionRepository.findByRoleId(updatedRole.getId());
 
         deleteExistingPermission(previousRolePermissionList,updateRoleRequest.getPermissions());
@@ -104,7 +104,7 @@ public class RoleService {
                 rolePermission.setRoleId(updatedRole.getId());
                 rolePermission.setPermissionId(rolePermissionObject);
                 rolePermission.setUpdatedBy(updateRoleRequest.getUpdatedBy());
-              //  rolePermissionRepository.save(rolePermission);
+                rolePermissionRepository.save(rolePermission);
             }
         });
 
@@ -183,7 +183,7 @@ public class RoleService {
                 }
             }
         } catch (Exception ex) {
-        //    log.error("Error occurred while deleting User entity from database", ex);
+            log.error("Error occurred while deleting User entity from database", ex);
             throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());
         }
         return Boolean.TRUE;

@@ -61,7 +61,7 @@ public class PasswordResetService {
     	 resetPasswordTokens.setExpired(false);
     	 resetPasswordTokens.setUserId(userOptional);
     	 //save this resetPasswordToken Entity to the db via a resetPasswordrepository which u will create
-    	// resetPasswordRepository.save(resetPasswordTokens);
+    	 resetPasswordRepository.save(resetPasswordTokens);
     	 //send a mail to the user's email, u have to create a method for this(verify with Moses)
 
 		String encryptUserDetail = null;
@@ -80,7 +80,7 @@ public class PasswordResetService {
 
 	public String showChangePasswordPage(String encryptUserDetail){
     	ResetPasswordTokens passToken = AppUtil.validatePasswordResetToken(encryptUserDetail);
-	//	resetPasswordRepository.save(passToken);
+		resetPasswordRepository.save(passToken);
 		//TODO: tunde to provide redirecturl and pass encrypt userdetail as queryparam;
 		return "redirect url";
 	}
@@ -95,11 +95,11 @@ public class PasswordResetService {
 			passToken.setExpired(Boolean.TRUE);
 			throw new AuthServiceException("Token expired. Kindly restart the process");
 		}
-	//	resetPasswordRepository.save(passToken);
+		resetPasswordRepository.save(passToken);
 
 		UserEntity userEntity = passToken.getUserId();
 		userEntity.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
-		//userRepository.save(userEntity);
+		userRepository.save(userEntity);
 
 		//TODO: Notify user of new password
     	return Boolean.TRUE;
@@ -115,7 +115,7 @@ public class PasswordResetService {
 			throw new AuthServiceException("Invalid old Password");
 		}
 		user.setPassword(passwordEncoder.encode(changePasswordRequestModel.getNewPassword()));
-	//	userRepository.save(user);
+		userRepository.save(user);
 		//TODO: Notify user of new password
 		return Boolean.TRUE;
 	}
