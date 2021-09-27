@@ -1,11 +1,12 @@
 package com.etz.authorisationserver.util;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import static com.etz.authorisationserver.constant.AppConstant.PAGE;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.etz.authorisationserver.constant.AppConstant.PAGE;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 public class RequestUtil {
 
@@ -98,5 +99,20 @@ public class RequestUtil {
     	//getRequest().getRequestURI();
     	return getRequest().getRequestURL().toString();
     }
+    
+//    @SuppressWarnings("unchecked")
+//	public static void setAuthenticationObj(OAuth2Authentication authentication) {
+//    	getRequest().setAttribute(AppConstant.AUTHORISATION_OBJECT, authentication.getDetails());
+//    }
+//    
+//    @Autowired
+//    private TokenService tokenService;
+//    
+//    @SuppressWarnings("unchecked")
+//	public static String getAccessToken() {
+//    	OAuth2Authentication authentication = (OAuth2Authentication)getRequest().getAttribute(AppConstant.AUTHORISATION_OBJECT);
+//    	String claimValue = tokenService.
+//    	return claimValue;
+//    }
 
 }

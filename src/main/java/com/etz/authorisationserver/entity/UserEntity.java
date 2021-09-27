@@ -23,6 +23,9 @@ import java.util.Objects;
 @Where(clause = "deleted=false")
 @RequiredArgsConstructor
 public class UserEntity extends BaseEntity implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -53,6 +56,12 @@ public class UserEntity extends BaseEntity implements Serializable {
 
 	@Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
 	private Boolean status;
+	
+	@Column(name = "authorised", columnDefinition = "TINYINT", length = 1)
+	private Boolean authorised;
+	
+	@Column(name = "authoriser", length=100)
+	private String authoriser;
 
 	@ToString.Exclude
 	@OneToMany(mappedBy = "userId",fetch = FetchType.LAZY,

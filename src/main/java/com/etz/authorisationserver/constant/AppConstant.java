@@ -9,4 +9,9 @@ public interface AppConstant {
     String UPDATED_AT = "updated_at";
 
     String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+
+	public static final String USER = "USER";
+	public static final String ROLE = "ROLE";
+	
+	public static final String AUTHORISATION_OBJECT = "AUTHORISATION_OBJECT";
 }

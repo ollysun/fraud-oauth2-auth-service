@@ -1,23 +1,32 @@
 package com.etz.authorisationserver.services;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.etz.authorisationserver.constant.AppConstant;
 import com.etz.authorisationserver.dto.request.CreateRoleRequest;
 import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
 import com.etz.authorisationserver.dto.response.RoleResponse;
-import com.etz.authorisationserver.entity.*;
+import com.etz.authorisationserver.entity.PermissionEntity;
+import com.etz.authorisationserver.entity.Role;
+import com.etz.authorisationserver.entity.RolePermission;
+import com.etz.authorisationserver.entity.UserRole;
 import com.etz.authorisationserver.exception.AuthServiceException;
 import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import com.etz.authorisationserver.repository.RolePermissionRepository;
 import com.etz.authorisationserver.repository.RoleRepository;
+import com.etz.authorisationserver.repository.UserRepository;
 import com.etz.authorisationserver.repository.UserRoleRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.etz.authorisationserver.util.AppUtil;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -34,6 +43,12 @@ public class RoleService {
 
     @Autowired
     private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private AppUtil appUtil;
 
     //@PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
@@ -58,15 +73,23 @@ public class RoleService {
             }
         }
 
-        return RoleResponse.builder()
-                                    .roleId(role.getId())
-                                    .roleName(role.getName())
-                                    .description(role.getDescription())
-                                    .status(role.getStatus())
-                                    .permissions(getPermissionNamesFromPermissionTable(createRoleRequest.getPermissionList()))
-                                    .createdBy(createRoleRequest.getCreatedBy())
-                                    .createdAt(role.getCreatedAt())
-                                    .build();
+        
+        RoleResponse roleResponse = RoleResponse.builder()
+	                                    .roleId(role.getId())
+	                                    .roleName(role.getName())
+	                                    .description(role.getDescription())
+	                                    .status(role.getStatus())
+	                                    .permissions(getPermissionNamesFromPermissionTable(createRoleRequest.getPermissionList()))
+	                                    .createdBy(createRoleRequest.getCreatedBy())
+	                                    .createdAt(role.getCreatedAt())
+	                                    .build();
+        
+        // create user notification
+        Long initiatorUserId = userRepository.findByUsername(createRoleRequest.getCreatedBy()).getId();
+        Long initiatorRoleId = userRepository.findByUsername(createRoleRequest.getCreatedBy()).getRoles().stream().findFirst().get().getId();
+        appUtil.createUserNotification(AppConstant.ROLE, String.valueOf(createdRole.getId()), createRoleRequest.getCreatedBy(), initiatorRoleId, initiatorUserId);
+        
+        return roleResponse;
     }
 
     List<String> getPermissionNamesFromPermissionTable(List<Long> permissionIds){
@@ -105,7 +128,12 @@ public class RoleService {
                 rolePermissionRepository.save(rolePermission);
             }
         });
-
+        
+        // create user notification
+        Long initiatorUserId = userRepository.findByUsername(updateRoleRequest.getUpdatedBy()).getId();
+        Long initiatorRoleId = userRepository.findByUsername(updateRoleRequest.getUpdatedBy()).getRoles().stream().findFirst().get().getId();
+        appUtil.createUserNotification(AppConstant.ROLE, String.valueOf(updatedRole.getId()), updateRoleRequest.getUpdatedBy(), initiatorRoleId, initiatorUserId);
+        
         return true;
     }
 
