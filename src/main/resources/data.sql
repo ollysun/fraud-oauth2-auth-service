@@ -101,7 +101,7 @@ insert into permission(name, status) values("OFAC.CREATE",1);
 insert into permission(name, status) values("OFAC.READ",1);
 insert into permission(name, status) values("OFAC.UPDATE",1);
 insert into permission(name, status) values("OFAC.DELETE",1);
-insert into permission(name, status) values("OFAC.APROVE",1);
+insert into permission(name, status) values("OFAC.APPROVE",1);
 insert into permission(name, status) values("WATCHLIST_INTERNAL.CREATE",1);
 insert into permission(name, status) values("WATCHLIST_INTERNAL.READ",1);
 insert into permission(name, status) values("WATCHLIST_INTERNAL.UPDATE",1);
