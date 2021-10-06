@@ -95,17 +95,19 @@ public class AppUtil {
     }
 
     
-    public int createUserNotification(String entity, String entityId, String createdBy, Long roleId, Long userId) {
+    public int createUserNotification(String entity, String entityId, String createdBy) {
     	UserNotificationRequest userNotificationRequest = new UserNotificationRequest();
     	userNotificationRequest.setEntity(entity);
     	userNotificationRequest.setEntityId(entityId);
     	userNotificationRequest.setNotifType(1);
-    	userNotificationRequest.setRoleId(roleId);
-    	userNotificationRequest.setUserId(userId);
+    	//userNotificationRequest.setRoleId()
+    	//userNotificationRequest.setUserId()
     	userNotificationRequest.setCreatedBy(createdBy);
 
 		int httpStatus = 0;
 		try {
+			log.info("Create UserNotification URL : {}", eagelEyeManager.getCreateUserNotificationUrl());
+			log.info("Create UserNotification Request : {}", userNotificationRequest);
 			@SuppressWarnings("unchecked")
 			ModelResponse<UserNotification> userNotificationResponse = apiUtil.post(eagelEyeManager.getCreateUserNotificationUrl(), setFixedExtraHeader(), userNotificationRequest, 
 					(Class<ModelResponse<UserNotification>>) (Class<?>) ModelResponse.class);
@@ -123,10 +125,8 @@ public class AppUtil {
     }
     
 	private static HashMap<String, String> setFixedExtraHeader() {
-		String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZnJhdWQtZW5naW5lIl0sInJvbGUiOlsiUk9MRV9BRE1JTiJdLCJ1c2VyX25hbWUiOiJ0ZXN0Iiwic2NvcGUiOlsicmVhZCIsIndyaXRlIl0sImV4cCI6MTYzMjY1MTI5MiwidXNlcklkIjozLCJhdXRob3JpdGllcyI6WyJQUk9EVUNULlVQREFURSIsIlNFUlZJQ0UuREFUQVNFVC5DUkVBVEUiLCJQUk9EVUNULlJFQUQiLCJQUk9EVUNULkNSRUFURSIsIlBST0RVQ1QuU0VSVklDRS5DUkVBVEUiXSwianRpIjoiMzZjYTdlMzctNTI3MC00YzI1LTg0ZDEtZTUyNTQzYzQyNzBiIiwiY2xpZW50X2lkIjoiY2xpZW50SWQifQ.efDd_ABo9h3PGVAX8UjJa5nkDSIgIjU8fIkAMhXcKw8";
-		//oauth2Service.getAccessToken()
 		HashMap<String, String> extraHeaders = new HashMap<>();
-		extraHeaders.put(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+		extraHeaders.put(HttpHeaders.AUTHORIZATION, "Bearer " + RequestUtil.getToken());
 		extraHeaders.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		return extraHeaders;
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.etz.authorisationserver.constant.AppConstant;
+import com.etz.authorisationserver.dto.request.ApprovalRequest;
 import com.etz.authorisationserver.dto.request.CreateUserRequest;
 import com.etz.authorisationserver.dto.request.UpdateUserRequest;
 import com.etz.authorisationserver.dto.response.UserResponse;
@@ -107,9 +109,7 @@ public class UserEntityService {
        UserResponse userResponse = outputUserResponse(user, createUserRequest);
        
        // create user notification
-       Long initiatorUserId = userRepository.findByUsername(createUserRequest.getCreatedBy()).getId();
-       Long initiatorRoleId = userRepository.findByUsername(createUserRequest.getCreatedBy()).getRoles().stream().findFirst().get().getId();
-       appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), createUserRequest.getCreatedBy(), initiatorRoleId, initiatorUserId);
+       appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), createUserRequest.getCreatedBy());
        
        return userResponse;
     }
@@ -200,9 +200,7 @@ public class UserEntityService {
         }
         
         // create user notification
-        Long initiatorUserId = userRepository.findByUsername(updateUserRequest.getUpdatedBy()).getId();
-        Long initiatorRoleId = userRepository.findByUsername(updateUserRequest.getUpdatedBy()).getRoles().stream().findFirst().get().getId();
-        appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), updateUserRequest.getUpdatedBy(), initiatorRoleId, initiatorUserId);
+        appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), updateUserRequest.getUpdatedBy());
         return true;
     }
 
@@ -295,7 +293,34 @@ public class UserEntityService {
         return Boolean.TRUE;
     }
 
-
+    //@PreAuthorize("hasAuthority('USER.APPROVE')")
+	public UserResponse updateUserAuthoriser(ApprovalRequest request) {
+		Optional<UserEntity> userOptional = userRepository.findById(Long.valueOf(request.getEntityId()));
+		if(!userOptional.isPresent()) {
+			throw new ResourceNotFoundException("UserEntity not found for ID " + Long.valueOf(request.getEntityId()));
+		}
+		UserEntity userEntity = userOptional.get();
+		userEntity.setAuthorised(request.getAction().equalsIgnoreCase(AppConstant.APPROVE_ACTION) ? Boolean.TRUE : Boolean.FALSE);
+		userEntity.setAuthoriser(request.getCreatedBy());
+		userEntity.setUpdatedBy(request.getCreatedBy());
+		UserEntity updatedUser = userRepository.save(userEntity);
+		
+		return UserResponse.builder()
+                .userId(updatedUser.getId())
+                .userName(updatedUser.getUsername())
+                .status(updatedUser.getStatus())
+                .firstName(updatedUser.getFirstName())
+                .lastName(updatedUser.getLastName())
+                .phone(updatedUser.getPhone())
+                .email(updatedUser.getEmail())
+                .hasRole(updatedUser.getHasRole())
+                //.roleId(createUserRequest.getRoleId())
+                .hasPermission(updatedUser.getHasPermission())
+                //.permissionNames(getPermissionName(createUserRequest.getPermissionIds()))
+                .createdBy(updatedUser.getCreatedBy())
+                .createdAt(updatedUser.getCreatedAt())
+                .build();
+	}
     
 
 }

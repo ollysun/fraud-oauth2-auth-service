@@ -11,8 +11,8 @@ import org.springframework.security.oauth2.client.token.grant.password.ResourceO
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
-@Configuration
-@EnableOAuth2Client
+//@Configuration
+//@EnableOAuth2Client
 public class Oauth2ClientConfig {
 
 	@Value("clientId")

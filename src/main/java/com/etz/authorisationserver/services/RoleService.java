@@ -3,6 +3,8 @@ package com.etz.authorisationserver.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.etz.authorisationserver.constant.AppConstant;
+import com.etz.authorisationserver.dto.request.ApprovalRequest;
 import com.etz.authorisationserver.dto.request.CreateRoleRequest;
 import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
 import com.etz.authorisationserver.dto.response.RoleResponse;
@@ -22,7 +25,6 @@ import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import com.etz.authorisationserver.repository.RolePermissionRepository;
 import com.etz.authorisationserver.repository.RoleRepository;
-import com.etz.authorisationserver.repository.UserRepository;
 import com.etz.authorisationserver.repository.UserRoleRepository;
 import com.etz.authorisationserver.util.AppUtil;
 
@@ -43,9 +45,6 @@ public class RoleService {
 
     @Autowired
     private UserRoleRepository userRoleRepository;
-
-    @Autowired
-    private UserRepository userRepository;
     
     @Autowired
     private AppUtil appUtil;
@@ -75,7 +74,7 @@ public class RoleService {
 
         
         RoleResponse roleResponse = RoleResponse.builder()
-	                                    .roleId(role.getId())
+	                                    .roleId(createdRole.getId())
 	                                    .roleName(role.getName())
 	                                    .description(role.getDescription())
 	                                    .status(role.getStatus())
@@ -85,9 +84,7 @@ public class RoleService {
 	                                    .build();
         
         // create user notification
-        Long initiatorUserId = userRepository.findByUsername(createRoleRequest.getCreatedBy()).getId();
-        Long initiatorRoleId = userRepository.findByUsername(createRoleRequest.getCreatedBy()).getRoles().stream().findFirst().get().getId();
-        appUtil.createUserNotification(AppConstant.ROLE, String.valueOf(createdRole.getId()), createRoleRequest.getCreatedBy(), initiatorRoleId, initiatorUserId);
+        appUtil.createUserNotification(AppConstant.ROLE, String.valueOf(createdRole.getId()), createRoleRequest.getCreatedBy());
         
         return roleResponse;
     }
@@ -130,9 +127,7 @@ public class RoleService {
         });
         
         // create user notification
-        Long initiatorUserId = userRepository.findByUsername(updateRoleRequest.getUpdatedBy()).getId();
-        Long initiatorRoleId = userRepository.findByUsername(updateRoleRequest.getUpdatedBy()).getRoles().stream().findFirst().get().getId();
-        appUtil.createUserNotification(AppConstant.ROLE, String.valueOf(updatedRole.getId()), updateRoleRequest.getUpdatedBy(), initiatorRoleId, initiatorUserId);
+        appUtil.createUserNotification(AppConstant.ROLE, String.valueOf(updatedRole.getId()), updateRoleRequest.getUpdatedBy());
         
         return true;
     }
@@ -214,4 +209,46 @@ public class RoleService {
         }
         return Boolean.TRUE;
     }
+    
+    //@PreAuthorize("hasAuthority('ROLE.APPROVE')")
+	public RoleResponse updateRoleAuthoriser(ApprovalRequest request) {
+		Optional<Role> roleOptional = roleRepository.findById(Long.valueOf(request.getEntityId()));
+		if(!roleOptional.isPresent()) {
+            log.error("Role not found for ID " + Long.valueOf(request.getEntityId()));
+			throw new ResourceNotFoundException("Role not found for ID " + Long.valueOf(request.getEntityId()));
+		}
+		Role role = roleOptional.get();
+		role.setAuthorised(request.getAction().equalsIgnoreCase(AppConstant.APPROVE_ACTION) ? Boolean.TRUE : Boolean.FALSE);
+		role.setAuthoriser(request.getCreatedBy());
+		role.setUpdatedBy(request.getCreatedBy());
+		Role updatedRole = roleRepository.save(role);
+		
+		return RoleResponse.builder()
+                .roleId(updatedRole.getId())
+                .roleName(updatedRole.getName())
+                .description(updatedRole.getDescription())
+                .status(updatedRole.getStatus())
+                .createdBy(updatedRole.getCreatedBy())
+                .createdAt(updatedRole.getCreatedAt())
+                .build();
+	}
+	
+	//@PreAuthorize("hasAuthority('ROLE.APPROVE')")
+	public List<Long> getRoleIdsByPermissionNane(String permissionName){
+		// get permission ID for entity with approve permission
+		PermissionEntity permissionEntity = permissionRepository.findByName(permissionName.toUpperCase());
+    	if(Objects.isNull(permissionEntity))  {
+            log.error("Permission not found for permission name " + permissionName.toUpperCase());
+    		throw new ResourceNotFoundException("Permission not found for permission name " + permissionName.toUpperCase());
+    	}
+    	
+    	// get all role(s) that have been assigned the approval permission ID gotten from above
+    	List<Long> roleIdsHavingEntityApprovalPermissionId = rolePermissionRepository.findByPermissionId(permissionEntity.getId()).stream().map(RolePermission::getRoleId).collect(Collectors.toList());
+    	if(roleIdsHavingEntityApprovalPermissionId.isEmpty()) {
+            log.error("No Role has been assigned " + permissionName.toUpperCase() +" permission");
+    		throw new ResourceNotFoundException("No Role has been assigned " + permissionName.toUpperCase() +" permission");
+    	}
+    	return roleIdsHavingEntityApprovalPermissionId;
+	}
+	
 }

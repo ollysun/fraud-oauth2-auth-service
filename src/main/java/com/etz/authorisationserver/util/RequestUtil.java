@@ -1,6 +1,7 @@
 package com.etz.authorisationserver.util;
 
 import static com.etz.authorisationserver.constant.AppConstant.PAGE;
+import static com.etz.authorisationserver.constant.AppConstant.ACCESS_TOKEN;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -100,19 +101,12 @@ public class RequestUtil {
     	return getRequest().getRequestURL().toString();
     }
     
-//    @SuppressWarnings("unchecked")
-//	public static void setAuthenticationObj(OAuth2Authentication authentication) {
-//    	getRequest().setAttribute(AppConstant.AUTHORISATION_OBJECT, authentication.getDetails());
-//    }
-//    
-//    @Autowired
-//    private TokenService tokenService;
-//    
-//    @SuppressWarnings("unchecked")
-//	public static String getAccessToken() {
-//    	OAuth2Authentication authentication = (OAuth2Authentication)getRequest().getAttribute(AppConstant.AUTHORISATION_OBJECT);
-//    	String claimValue = tokenService.
-//    	return claimValue;
-//    }
+    public static void setToken(String token) {
+    	getRequest().setAttribute(ACCESS_TOKEN, token);
+    }
+    
+    public static String getToken() {
+    	return (String) getRequest().getAttribute(ACCESS_TOKEN);
+    }
 
 }

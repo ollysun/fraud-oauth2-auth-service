@@ -14,4 +14,10 @@ public interface AppConstant {
 	public static final String ROLE = "ROLE";
 	
 	public static final String AUTHORISATION_OBJECT = "AUTHORISATION_OBJECT";
+	public static final String APPROVE_ACTION = "APPROVE";
+
+	public static final String ACCESS_TOKEN_CLAIM = "access_token_claim";
+	public static final String ACCESS_TOKEN = "token";
+	public static final String AUTHORIZATION = "Authorization";
+	public static final String TOKEN_PREFIX = "Bearer ";
 }
