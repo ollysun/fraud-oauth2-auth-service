@@ -1,22 +1,37 @@
 package com.etz.authorisationserver.services;
 
-import com.etz.authorisationserver.dto.request.CreateUserRequest;
-import com.etz.authorisationserver.dto.request.UpdateUserRequest;
-import com.etz.authorisationserver.dto.response.UserResponse;
-import com.etz.authorisationserver.entity.*;
-import com.etz.authorisationserver.exception.AuthServiceException;
-import com.etz.authorisationserver.exception.ResourceNotFoundException;
-import com.etz.authorisationserver.repository.*;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.etz.authorisationserver.constant.AppConstant;
+import com.etz.authorisationserver.dto.request.ApprovalRequest;
+import com.etz.authorisationserver.dto.request.CreateUserRequest;
+import com.etz.authorisationserver.dto.request.UpdateUserRequest;
+import com.etz.authorisationserver.dto.response.UserResponse;
+import com.etz.authorisationserver.entity.PermissionEntity;
+import com.etz.authorisationserver.entity.Role;
+import com.etz.authorisationserver.entity.UserEntity;
+import com.etz.authorisationserver.entity.UserPermission;
+import com.etz.authorisationserver.entity.UserRole;
+import com.etz.authorisationserver.exception.AuthServiceException;
+import com.etz.authorisationserver.exception.ResourceNotFoundException;
+import com.etz.authorisationserver.repository.PermissionRepository;
+import com.etz.authorisationserver.repository.RoleRepository;
+import com.etz.authorisationserver.repository.UserPermissionRepository;
+import com.etz.authorisationserver.repository.UserRepository;
+import com.etz.authorisationserver.repository.UserRoleRepository;
+import com.etz.authorisationserver.util.AppUtil;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -39,6 +54,9 @@ public class UserEntityService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private AppUtil appUtil;
 
     //@PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
@@ -87,7 +105,13 @@ public class UserEntityService {
             userPermissionRepository.saveAll(userPermissionList);
             log.info("userpermission " + userPermissionList);
         }
-        return outputUserResponse(user, createUserRequest);
+        
+       UserResponse userResponse = outputUserResponse(user, createUserRequest);
+       
+       // create user notification
+       appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), createUserRequest.getCreatedBy());
+       
+       return userResponse;
     }
 
 
@@ -174,6 +198,9 @@ public class UserEntityService {
             }
 
         }
+        
+        // create user notification
+        appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), updateUserRequest.getUpdatedBy());
         return true;
     }
 
@@ -266,7 +293,34 @@ public class UserEntityService {
         return Boolean.TRUE;
     }
 
-
+    //@PreAuthorize("hasAuthority('USER.APPROVE')")
+	public UserResponse updateUserAuthoriser(ApprovalRequest request) {
+		Optional<UserEntity> userOptional = userRepository.findById(Long.valueOf(request.getEntityId()));
+		if(!userOptional.isPresent()) {
+			throw new ResourceNotFoundException("UserEntity not found for ID " + Long.valueOf(request.getEntityId()));
+		}
+		UserEntity userEntity = userOptional.get();
+		userEntity.setAuthorised(request.getAction().equalsIgnoreCase(AppConstant.APPROVE_ACTION) ? Boolean.TRUE : Boolean.FALSE);
+		userEntity.setAuthoriser(request.getCreatedBy());
+		userEntity.setUpdatedBy(request.getCreatedBy());
+		UserEntity updatedUser = userRepository.save(userEntity);
+		
+		return UserResponse.builder()
+                .userId(updatedUser.getId())
+                .userName(updatedUser.getUsername())
+                .status(updatedUser.getStatus())
+                .firstName(updatedUser.getFirstName())
+                .lastName(updatedUser.getLastName())
+                .phone(updatedUser.getPhone())
+                .email(updatedUser.getEmail())
+                .hasRole(updatedUser.getHasRole())
+                //.roleId(createUserRequest.getRoleId())
+                .hasPermission(updatedUser.getHasPermission())
+                //.permissionNames(getPermissionName(createUserRequest.getPermissionIds()))
+                .createdBy(updatedUser.getCreatedBy())
+                .createdAt(updatedUser.getCreatedAt())
+                .build();
+	}
     
 
 }

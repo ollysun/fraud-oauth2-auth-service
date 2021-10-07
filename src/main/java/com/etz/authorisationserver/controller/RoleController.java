@@ -1,18 +1,33 @@
 package com.etz.authorisationserver.controller;
 
-import com.etz.authorisationserver.dto.request.CreateRoleRequest;
-import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
-import com.etz.authorisationserver.dto.response.*;
-import com.etz.authorisationserver.services.RoleService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.List;
+import com.etz.authorisationserver.dto.request.ApprovalRequest;
+import com.etz.authorisationserver.dto.request.CreateRoleRequest;
+import com.etz.authorisationserver.dto.request.UpdateRoleRequest;
+import com.etz.authorisationserver.dto.response.BooleanResponse;
+import com.etz.authorisationserver.dto.response.CollectionResponse;
+import com.etz.authorisationserver.dto.response.ModelResponse;
+import com.etz.authorisationserver.dto.response.RoleResponse;
+import com.etz.authorisationserver.dto.response.StringResponse;
+import com.etz.authorisationserver.services.RoleService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/v1/roles")
@@ -54,4 +69,17 @@ public class RoleController {
         return new BooleanResponse(roleService.deleteRoleInTransaction(roleId));
     }
 
+    @PutMapping("/authoriser")
+    public ResponseEntity<ModelResponse<RoleResponse>> updateRoleAuthoriser(@RequestBody @Valid ApprovalRequest request){
+        ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.updateRoleAuthoriser(request));
+        response.setStatus(HttpStatus.OK.value());
+        response.setMessage("Role Authoriser Updated Successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/permissionroles")
+    public ResponseEntity<CollectionResponse<Long>> getPermissionRoleIds(@RequestParam String permissionName){
+        CollectionResponse<Long> collectionResponse = new CollectionResponse<>(roleService.getRoleIdsByPermissionNane(permissionName));
+        return new ResponseEntity<>(collectionResponse, HttpStatus.OK);
+    }
 }

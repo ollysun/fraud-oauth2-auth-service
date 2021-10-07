@@ -25,24 +25,24 @@ VALUES ('eagle-eye-manager', 'fraud-eagle-eye-manager','$2a$10$vCXMWCn7fDZWOcLnI
 360000, null, true);
 
 --pass
-INSERT INTO user(username, password, first_name, last_name, phone, email, status)
+INSERT INTO user(username, password, first_name, last_name, phone, email, status, created_by, created_at)
 VALUES('user','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'moses',
-       'olalere','08067648113','olalere.moses@etranzactng.com', 1);
+       'olalere','08067648113','olalere.moses@etranzactng.com', 1, 'user', sysdate());
 
-INSERT INTO user(username, password,  first_name, last_name, phone, email, status)
+INSERT INTO user(username, password,  first_name, last_name, phone, email, status, created_by, created_at)
 VALUES('admin','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'moses',
-       'olalere','08067657890','olalere.moses2@etranzactng.com', 1);
+       'olalere','08067657890','olalere.moses2@etranzactng.com', 1, 'admin', sysdate());
 
-INSERT INTO user(username, password,  first_name, last_name, phone, email, status)
+INSERT INTO user(username, password,  first_name, last_name, phone, email, status, created_by, created_at)
 VALUES('test','$2a$10$cyf5NfobcruKQ8XGjUJkEegr9ZWFqaea6vjpXWEaSqTa2xL9wjgQC', 'moses',
-       'olalere','08067657896','olalere3.moses2@etranzactng.com', 1);
+       'olalere','08067657896','olalere3.moses2@etranzactng.com', 1, 'test', sysdate());
 
 /* Insert Data into Role Table  */
-insert into authorisation_service.role(name, description, status) values('ROLE_USER', 'user role', 1);
-insert into authorisation_service.role(name, description, status) values('ROLE_ADMIN', 'admin role', 1);
-insert into authorisation_service.role(name, description, status) values('ROLE_DBA', 'dba role', 1 );
-insert into authorisation_service.role(name, description, status) values('ROLE_SELLER', 'seller role', 1);
-insert into authorisation_service.role(name, description, status) values('ROLE_BUYER', 'buyer role', 1);
+insert into authorisation_service.role(name, description, status, created_by, created_at) values('ROLE_USER', 'user role', 1, 'admin', sysdate());
+insert into authorisation_service.role(name, description, status, created_by, created_at) values('ROLE_ADMIN', 'admin role', 1, 'admin', sysdate());
+insert into authorisation_service.role(name, description, status, created_by, created_at) values('ROLE_DBA', 'dba role', 1, 'admin', sysdate() );
+insert into authorisation_service.role(name, description, status, created_by, created_at) values('ROLE_SELLER', 'seller role', 1, 'admin', sysdate());
+insert into authorisation_service.role(name, description, status, created_by, created_at) values('ROLE_BUYER', 'buyer role', 1, 'admin', sysdate());
 
 
 
@@ -101,7 +101,7 @@ insert into permission(name, status) values("OFAC.CREATE",1);
 insert into permission(name, status) values("OFAC.READ",1);
 insert into permission(name, status) values("OFAC.UPDATE",1);
 insert into permission(name, status) values("OFAC.DELETE",1);
-insert into permission(name, status) values("OFAC.APROVE",1);
+insert into permission(name, status) values("OFAC.APPROVE",1);
 insert into permission(name, status) values("WATCHLIST_INTERNAL.CREATE",1);
 insert into permission(name, status) values("WATCHLIST_INTERNAL.READ",1);
 insert into permission(name, status) values("WATCHLIST_INTERNAL.UPDATE",1);
