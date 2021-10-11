@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,24 +33,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private RolePermissionRepository rolePermissionRepository;
+    private final RolePermissionRepository rolePermissionRepository;
 
-    @Autowired
-    private PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
-    
-    @Autowired
-    private AppUtil appUtil;
+    private final UserRoleRepository userRoleRepository;
 
-    //@PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
+    private final AppUtil appUtil;
+
+    @PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public RoleResponse addRole(CreateRoleRequest createRoleRequest) {
         Role role = new Role();
@@ -96,7 +93,7 @@ public class RoleService {
     }
 
 
-    //@PreAuthorize("hasAnyAuthority('ROLE.UPDATE','ROLE.APPROVE')")
+    @PreAuthorize("hasAnyAuthority('ROLE.UPDATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean updateRole(UpdateRoleRequest updateRoleRequest) {
         Role roleOptional = new Role();
@@ -144,7 +141,7 @@ public class RoleService {
             List<Long> commonElements = previousRolePermissionId.stream()
                     .filter(permissionIds::contains)
                     .collect(Collectors.toList());
-            commonElements.forEach(commonElement -> rolePermissionRepository.deleteByPermissionIdPermanent(commonElement));
+            commonElements.forEach(rolePermissionRepository::deleteByPermissionIdPermanent);
         }
     }
 
