@@ -3,9 +3,13 @@ package com.etz.authorisationserver.dto.request;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApprovalRequest {
 	@NotBlank
 	private String entity;
