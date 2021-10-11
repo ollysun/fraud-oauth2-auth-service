@@ -7,7 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,30 +37,24 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserEntityService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserPermissionRepository userPermissionRepository;
+    private final UserPermissionRepository userPermissionRepository;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    @Autowired
-    private PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    
-    @Autowired
-    private AppUtil appUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    //@PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
+    private final AppUtil appUtil;
+
+    @PreAuthorize("hasAnyAuthority('USER.CREATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public UserResponse createUser(CreateUserRequest createUserRequest){
         List<UserPermission> userPermissionList = new ArrayList<>();
@@ -140,7 +136,7 @@ public class UserEntityService {
         return permissionNames;
     }
 
-    //@PreAuthorize("hasAnyAuthority('USER.UPDATE','USER.APPROVE')")
+    @PreAuthorize("hasAnyAuthority('USER.UPDATE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean updateUser(UpdateUserRequest updateUserRequest){
 
@@ -214,11 +210,11 @@ public class UserEntityService {
             List<Long> commonElements = previousUserPermissionIds.stream()
                                                                  .filter(permissionIds::contains)
                                                                  .collect(Collectors.toList());
-            commonElements.forEach(commonElement -> userPermissionRepository.deleteByPermissionIdPermanent(commonElement));
+            commonElements.forEach(userPermissionRepository::deleteByPermissionIdPermanent);
         }
     }
 
-    //@PreAuthorize("hasAuthority('USER.READ')")
+    @PreAuthorize("hasAuthority('USER.READ')")
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers(Long userId, Boolean activatedStatus){
         List<UserEntity> userList = new ArrayList<>();
@@ -271,7 +267,7 @@ public class UserEntityService {
         return userRole.getRoleId();
     }
 
-    //@PreAuthorize("hasAnyAuthority('USER.DELETE','USER.APPROVE')")
+    @PreAuthorize("hasAnyAuthority('USER.DELETE','USER.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
     public Boolean deleteUserInTransaction(Long userId) {
         UserEntity user = userRepository.findById(userId)
@@ -293,7 +289,7 @@ public class UserEntityService {
         return Boolean.TRUE;
     }
 
-    //@PreAuthorize("hasAuthority('USER.APPROVE')")
+    @PreAuthorize("hasAuthority('USER.APPROVE')")
 	public UserResponse updateUserAuthoriser(ApprovalRequest request) {
 		Optional<UserEntity> userOptional = userRepository.findById(Long.valueOf(request.getEntityId()));
 		if(!userOptional.isPresent()) {
@@ -314,9 +310,7 @@ public class UserEntityService {
                 .phone(updatedUser.getPhone())
                 .email(updatedUser.getEmail())
                 .hasRole(updatedUser.getHasRole())
-                //.roleId(createUserRequest.getRoleId())
                 .hasPermission(updatedUser.getHasPermission())
-                //.permissionNames(getPermissionName(createUserRequest.getPermissionIds()))
                 .createdBy(updatedUser.getCreatedBy())
                 .createdAt(updatedUser.getCreatedAt())
                 .build();
