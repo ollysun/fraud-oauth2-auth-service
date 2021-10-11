@@ -1,11 +1,13 @@
 package com.etz.authorisationserver.util;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import static com.etz.authorisationserver.constant.AppConstant.PAGE;
+import static com.etz.authorisationserver.constant.AppConstant.ACCESS_TOKEN;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.etz.authorisationserver.constant.AppConstant.PAGE;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 public class RequestUtil {
 
@@ -97,6 +99,14 @@ public class RequestUtil {
     public static String getSourceURL() {
     	//getRequest().getRequestURI();
     	return getRequest().getRequestURL().toString();
+    }
+    
+    public static void setToken(String token) {
+    	getRequest().setAttribute(ACCESS_TOKEN, token);
+    }
+    
+    public static String getToken() {
+    	return (String) getRequest().getAttribute(ACCESS_TOKEN);
     }
 
 }
