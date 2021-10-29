@@ -1,5 +1,8 @@
 package com.etz.authorisationserver.config;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +16,10 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableResourceServer
@@ -34,6 +35,26 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Value("${security.secret-key}")
     private String secretKey;
+
+    private static final String[] SWAGGER_WHITELIST = {
+            // -- swagger ui
+            "/swagger", "/v2/api-docs", "/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/actuator/health",
+            "/configuration/security", "/swagger-ui.html", "/webjars/**" };
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        // http.csrf().and().cors().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authorizeRequests()
+                .antMatchers("/health","/info", "/trace", "/monitoring",
+                        "/webjars/**","/swagger.html")
+                .permitAll()
+                .antMatchers(SWAGGER_WHITELIST)
+                .permitAll();
+        http.authorizeRequests().antMatchers("/**")
+                .authenticated();
+        http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+    }
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
@@ -89,4 +110,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+    
+    @Bean
+    public JwtAuthenticationFilter authenticationTokenFilterBean() {
+        return new JwtAuthenticationFilter();
+    }
+    
 }

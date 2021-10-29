@@ -1,22 +1,34 @@
 package com.etz.authorisationserver.controller;
 
-import com.etz.authorisationserver.dto.request.CreateUserRequest;
-import com.etz.authorisationserver.dto.request.ResetTokenRequestModel;
-import com.etz.authorisationserver.dto.request.UpdateUserRequest;
-import com.etz.authorisationserver.dto.response.*;
-import com.etz.authorisationserver.services.UserEntityService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.List;
+import com.etz.authorisationserver.dto.request.ApprovalRequest;
+import com.etz.authorisationserver.dto.request.CreateUserRequest;
+import com.etz.authorisationserver.dto.request.UpdateUserRequest;
+import com.etz.authorisationserver.dto.response.BooleanResponse;
+import com.etz.authorisationserver.dto.response.CollectionResponse;
+import com.etz.authorisationserver.dto.response.ModelResponse;
+import com.etz.authorisationserver.dto.response.StringResponse;
+import com.etz.authorisationserver.dto.response.UserResponse;
+import com.etz.authorisationserver.services.UserEntityService;
 
-@Slf4j
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
@@ -33,9 +45,6 @@ public class UserController {
         response.setMessage("UserEntity Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    
-    
-    
     
     @GetMapping
     public ResponseEntity<CollectionResponse<UserResponse>> getUser(
@@ -58,11 +67,17 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-
     @DeleteMapping("/{id}")
     public BooleanResponse deleteUser(@PathVariable Long id){
         return new BooleanResponse(userService.deleteUserInTransaction(id));
     }
 
-
+    @PutMapping("/authoriser")
+    public ResponseEntity<ModelResponse<UserResponse>> createUser(@Valid @RequestBody ApprovalRequest request) {
+        ModelResponse<UserResponse> response = new ModelResponse<>(userService.updateUserAuthoriser(request));
+        response.setStatus(HttpStatus.OK.value());
+        response.setMessage("UserEntity Authoriser Updated Successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
 }

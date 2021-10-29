@@ -1,14 +1,14 @@
 package com.etz.authorisationserver.repository;
 
-import com.etz.authorisationserver.entity.RolePermission;
-import com.etz.authorisationserver.entity.UserPermission;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.etz.authorisationserver.entity.RolePermission;
 
 @Repository
 public interface RolePermissionRepository extends JpaRepository<RolePermission, Long> {

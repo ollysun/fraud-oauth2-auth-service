@@ -34,6 +34,12 @@ public class Role extends BaseEntity implements Serializable {
 
     @Column(nullable = false, name = "status", columnDefinition = "TINYINT", length = 1)
     private Boolean status;
+	
+	@Column(name = "authorised", columnDefinition = "TINYINT", length = 1)
+	private Boolean authorised;
+	
+	@Column(name = "authoriser", length=100)
+	private String authoriser;
 
     @ToString.Exclude
     @ManyToMany(mappedBy = "roles", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)

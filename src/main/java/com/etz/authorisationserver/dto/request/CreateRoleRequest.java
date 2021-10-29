@@ -13,7 +13,9 @@ import java.util.List;
 @ToString
 @RequiredArgsConstructor
 public class CreateRoleRequest implements Serializable {
-    @NotBlank(message = "role name cannot be empty")
+	private static final long serialVersionUID = 1L;
+	
+	@NotBlank(message = "role name cannot be empty")
     private String roleName;
     private String description;
     @Valid
