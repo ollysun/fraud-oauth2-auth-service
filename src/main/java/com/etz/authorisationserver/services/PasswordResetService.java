@@ -72,7 +72,7 @@ public class PasswordResetService {
 			throw new AuthServiceException(e.getMessage());
 		}
 		//autowire emailsender service and call its sendmail()
-    	 String link = "<html><body><a href=\"http://localhost:9191/api/v1/password/reset?user="+encryptUserDetail +"\">click on the link below</a></body></html>";
+    	 String link = "<html><body><a href=\"http://172.17.10.83:3004/reset?user="+encryptUserDetail +"\">click on the link below</a></body></html>";
     	 emailSenderService.sendEmail(resetTokenRequestModel.getEmail(), "token generation request", "token "+tokenGenerated+" has been generated.\n"+ link);
     	 return Boolean.TRUE;//return true in the end
     	
