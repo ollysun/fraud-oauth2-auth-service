@@ -1,5 +1,12 @@
 package com.etz.authorisationserver.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.etz.authorisationserver.dto.request.CreatePermissionRequest;
 import com.etz.authorisationserver.dto.response.PermissionEntityResponse;
 import com.etz.authorisationserver.entity.PermissionEntity;
@@ -10,14 +17,8 @@ import com.etz.authorisationserver.exception.ResourceNotFoundException;
 import com.etz.authorisationserver.repository.PermissionRepository;
 import com.etz.authorisationserver.repository.RolePermissionRepository;
 import com.etz.authorisationserver.repository.UserPermissionRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -94,8 +95,8 @@ public class PermissionService {
 
         try{
             iPermissionRepository.deleteByPermissionId(permissionEntity.getId());
-            userPermissionRepository.deleteByPermissionId(userPermissionList.get(0).getPermissionId());
-            rolePermissionRepository.deleteByPermissionId(rolePermissionList.get(0).getPermissionId());
+            userPermissionList.forEach(userPermission -> userPermissionRepository.deleteByPermissionId(userPermission.getPermissionId()));
+            rolePermissionList.forEach(rolePermission -> rolePermissionRepository.deleteByPermissionId(rolePermission.getPermissionId()));
         } catch (Exception ex) {
             log.error("Error occurred while deactivating Permission entity from database", ex);
             throw new AuthServiceException("Error deleting User entity and relation from the database " + ex.getMessage());

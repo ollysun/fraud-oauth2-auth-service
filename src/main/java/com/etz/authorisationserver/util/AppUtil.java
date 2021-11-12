@@ -1,21 +1,14 @@
 package com.etz.authorisationserver.util;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.etz.authorisationserver.config.UserNotificationUrlConfig;
@@ -23,10 +16,7 @@ import com.etz.authorisationserver.dto.request.UserNotification;
 import com.etz.authorisationserver.dto.request.UserNotificationRequest;
 import com.etz.authorisationserver.dto.response.ModelResponse;
 import com.etz.authorisationserver.entity.ResetPasswordTokens;
-import com.etz.authorisationserver.entity.UserEntity;
 import com.etz.authorisationserver.exception.AuthServiceException;
-import com.etz.authorisationserver.exception.ResourceNotFoundException;
-import com.etz.authorisationserver.repository.ResetPasswordRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,11 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @Component
 public class AppUtil {
-
-    @Autowired
-    private static ResetPasswordRepository resetPasswordRepository;
-    @Autowired
-    private static PasswordEncoder  passwordEncoder;
 
     @Autowired
     private ApiUtil apiUtil;
@@ -68,32 +53,9 @@ public class AppUtil {
         }
     }
 
-    public static ResetPasswordTokens validatePasswordResetToken(String encryptdetails) {
-
-        String decryption = null;
-        try {
-            decryption = AESUtil.decrypt(encryptdetails);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-            log.debug(e.getMessage());
-            throw new AuthServiceException(e.getMessage());
-        }
-        String[] splitDescrypt = decryption.split("-");
-        ResetPasswordTokens passToken = resetPasswordRepository.findByUserIdAndTokenAndExpiredFalse(Long.parseLong(splitDescrypt[0]), splitDescrypt[1])
-                                                        .orElseThrow(() -> new ResourceNotFoundException("Invalid Token"));
-        if (!isTokenExpired(passToken)){
-            throw new AuthServiceException("Token Expired");
-        }
-        return passToken;
-    }
-
-    private static boolean isTokenExpired(ResetPasswordTokens passToken) {
+    public static boolean isTokenExpired(ResetPasswordTokens passToken) {
         return passToken.getExpirationDate().isBefore(LocalDateTime.now());
     }
-
-    public static boolean checkIfValidOldPassword(String oldPassword, UserEntity user){
-        return passwordEncoder.matches(oldPassword, user.getPassword());
-    }
-
     
     public int createUserNotification(String entity, String entityId, String createdBy) {
     	UserNotificationRequest userNotificationRequest = new UserNotificationRequest();
