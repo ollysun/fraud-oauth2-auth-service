@@ -27,6 +27,7 @@ import com.etz.authorisationserver.dto.response.StringResponse;
 import com.etz.authorisationserver.dto.response.UserResponse;
 import com.etz.authorisationserver.services.UserEntityService;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -73,6 +74,7 @@ public class UserController {
     }
 
     @PutMapping("/authoriser")
+    @ApiOperation(hidden = true, value = "Used internally")
     public ResponseEntity<ModelResponse<UserResponse>> createUser(@Valid @RequestBody ApprovalRequest request) {
         ModelResponse<UserResponse> response = new ModelResponse<>(userService.updateUserAuthoriser(request));
         response.setStatus(HttpStatus.OK.value());

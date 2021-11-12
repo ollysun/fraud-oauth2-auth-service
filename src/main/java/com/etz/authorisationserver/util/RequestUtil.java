@@ -1,10 +1,14 @@
 package com.etz.authorisationserver.util;
 
-import static com.etz.authorisationserver.constant.AppConstant.PAGE;
 import static com.etz.authorisationserver.constant.AppConstant.ACCESS_TOKEN;
+import static com.etz.authorisationserver.constant.AppConstant.ACCESS_TOKEN_CLAIM;
+import static com.etz.authorisationserver.constant.AppConstant.PAGE;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -99,6 +103,22 @@ public class RequestUtil {
     public static String getSourceURL() {
     	//getRequest().getRequestURI();
     	return getRequest().getRequestURL().toString();
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static void setAccessTokenClaim(OAuth2Authentication authentication) {
+    	Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
+    	getRequest().setAttribute(ACCESS_TOKEN_CLAIM, claims);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static String getAccessTokenClaim(String claim) {
+    	Map<String, Object> claims = (Map<String, Object>)getRequest().getAttribute(ACCESS_TOKEN_CLAIM);
+    	String claimValue = "";
+    	if (claims != null && claims.containsKey(claim)) {
+    		claimValue = String.valueOf(claims.get(claim));
+    	}
+    	return claimValue;
     }
     
     public static void setToken(String token) {

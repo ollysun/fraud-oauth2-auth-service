@@ -134,7 +134,17 @@ insert into authorisation_service.user_permission(`user_id`,`permission_id`) val
 insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,1);
 insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,2);
 insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,3);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,35);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,36);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,37);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,38);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(2,39);
 insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,2);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,35);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,36);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,37);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,38);
+insert into authorisation_service.role_permission(`role_id`,`permission_id`) values(1,39);
 
 
 

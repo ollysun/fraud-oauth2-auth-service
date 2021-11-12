@@ -230,7 +230,7 @@ public class RoleService {
                 .build();
 	}
 	
-	//@PreAuthorize("hasAuthority('ROLE.APPROVE')")
+	//@PreAuthorize("hasAuthority('ROLE.CREATE')")
 	public List<Long> getRoleIdsByPermissionNane(String permissionName){
 		// get permission ID for entity with approve permission
 		PermissionEntity permissionEntity = permissionRepository.findByName(permissionName.toUpperCase());

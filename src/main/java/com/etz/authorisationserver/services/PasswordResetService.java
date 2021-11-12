@@ -4,34 +4,32 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-
-import com.etz.authorisationserver.dto.request.ChangePasswordRequestModel;
-import com.etz.authorisationserver.dto.request.PasswordDto;
-import com.etz.authorisationserver.dto.request.ResetTokenRequestModel;
-import com.etz.authorisationserver.exception.AuthServiceException;
-import com.etz.authorisationserver.util.AESUtil;
-import com.etz.authorisationserver.util.AppUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import com.etz.authorisationserver.entity.ResetPasswordTokens;
-import com.etz.authorisationserver.entity.UserEntity;
-import com.etz.authorisationserver.exception.ResourceNotFoundException;
-import com.etz.authorisationserver.repository.ResetPasswordRepository;
-import com.etz.authorisationserver.repository.UserRepository;
-import com.etz.authorisationserver.util.Uuid5;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.etz.authorisationserver.constant.AppConstant;
+import com.etz.authorisationserver.dto.request.ChangePasswordRequestModel;
+import com.etz.authorisationserver.dto.request.PasswordDto;
+import com.etz.authorisationserver.dto.request.ResetTokenRequestModel;
+import com.etz.authorisationserver.entity.ResetPasswordTokens;
+import com.etz.authorisationserver.entity.UserEntity;
+import com.etz.authorisationserver.exception.AuthServiceException;
+import com.etz.authorisationserver.exception.ResourceNotFoundException;
+import com.etz.authorisationserver.repository.ResetPasswordRepository;
+import com.etz.authorisationserver.repository.UserRepository;
+import com.etz.authorisationserver.util.AESUtil;
+import com.etz.authorisationserver.util.AppUtil;
+import com.etz.authorisationserver.util.RequestUtil;
+import com.etz.authorisationserver.util.Uuid5;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -79,7 +77,7 @@ public class PasswordResetService {
 	}
 
 	public String showChangePasswordPage(String encryptUserDetail){
-    	ResetPasswordTokens passToken = AppUtil.validatePasswordResetToken(encryptUserDetail);
+    	ResetPasswordTokens passToken = validatePasswordResetToken(encryptUserDetail);
 		resetPasswordRepository.save(passToken);
 		//TODO: tunde to provide redirecturl and pass encrypt userdetail as queryparam;
 		return "redirect url";
@@ -89,7 +87,7 @@ public class PasswordResetService {
 	@Transactional
     public Boolean updatePassword(String encryptUserDetail, PasswordDto passwordDto) {
 
-		ResetPasswordTokens passToken = AppUtil.validatePasswordResetToken(encryptUserDetail);
+		ResetPasswordTokens passToken = validatePasswordResetToken(encryptUserDetail);
 		passToken.setConsumed(Boolean.TRUE);
 		if (LocalDateTime.now().isAfter(passToken.getExpirationDate())){
 			passToken.setExpired(Boolean.TRUE);
@@ -106,12 +104,15 @@ public class PasswordResetService {
     }
     
     public Boolean changePassword(ChangePasswordRequestModel changePasswordRequestModel) {
-		final UserEntity user = userRepository.findByEmail(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
+		log.info("{}", RequestUtil.getAccessTokenClaim(AppConstant.TOKEN_USERNAME));
+		final UserEntity user = userRepository.findByUsername(RequestUtil.getAccessTokenClaim(AppConstant.TOKEN_USERNAME));
 		if (user == null){
+			log.error("Unauthenticated User cannot change Password. Username -> {}", RequestUtil.getAccessTokenClaim(AppConstant.TOKEN_USERNAME));
 			throw new AuthServiceException("Unauthenticated User cannot change Password");
 		}
 
-		if (!AppUtil.checkIfValidOldPassword(changePasswordRequestModel.getOldPassword(), user)) {
+		if (!checkIfValidOldPassword(changePasswordRequestModel.getOldPassword(), user)) {
+			log.error("Invalid old Password for Username {}", user.getUsername());
 			throw new AuthServiceException("Invalid old Password");
 		}
 		user.setPassword(passwordEncoder.encode(changePasswordRequestModel.getNewPassword()));
@@ -119,4 +120,27 @@ public class PasswordResetService {
 		//TODO: Notify user of new password
 		return Boolean.TRUE;
 	}
+    
+    private boolean checkIfValidOldPassword(String oldPassword, UserEntity user){
+        return passwordEncoder.matches(oldPassword, user.getPassword());
+    }
+    
+    private ResetPasswordTokens validatePasswordResetToken(String encryptdetails) {
+
+        String decryption = null;
+        try {
+            decryption = AESUtil.decrypt(encryptdetails);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            log.debug(e.getMessage());
+            throw new AuthServiceException(e.getMessage());
+        }
+        String[] splitDescrypt = decryption.split("-");
+        ResetPasswordTokens passToken = resetPasswordRepository.findByUserIdAndTokenAndExpiredFalse(Long.parseLong(splitDescrypt[0]), splitDescrypt[1])
+                                                        .orElseThrow(() -> new ResourceNotFoundException("Invalid Token"));
+        if (!AppUtil.isTokenExpired(passToken)){
+            throw new AuthServiceException("Token Expired");
+        }
+        return passToken;
+    }
+    
 }

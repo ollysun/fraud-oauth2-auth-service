@@ -27,6 +27,7 @@ import com.etz.authorisationserver.dto.response.RoleResponse;
 import com.etz.authorisationserver.dto.response.StringResponse;
 import com.etz.authorisationserver.services.RoleService;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -70,6 +71,7 @@ public class RoleController {
     }
 
     @PutMapping("/authoriser")
+    @ApiOperation(hidden = true, value = "Used internally")
     public ResponseEntity<ModelResponse<RoleResponse>> updateRoleAuthoriser(@RequestBody @Valid ApprovalRequest request){
         ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.updateRoleAuthoriser(request));
         response.setStatus(HttpStatus.OK.value());
@@ -78,6 +80,7 @@ public class RoleController {
     }
 
     @GetMapping("/permissionroles")
+    @ApiOperation(hidden = true, value = "Used internally")
     public ResponseEntity<CollectionResponse<Long>> getPermissionRoleIds(@RequestParam String permissionName){
         CollectionResponse<Long> collectionResponse = new CollectionResponse<>(roleService.getRoleIdsByPermissionNane(permissionName));
         return new ResponseEntity<>(collectionResponse, HttpStatus.OK);
