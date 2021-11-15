@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,7 @@ import com.etz.authorisationserver.repository.RoleRepository;
 import com.etz.authorisationserver.repository.UserRoleRepository;
 import com.etz.authorisationserver.util.AppUtil;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,7 +48,7 @@ public class RoleService {
 
     @PreAuthorize("hasAnyAuthority('ROLE.CREATE','ROLE.APPROVE')")
     @Transactional(rollbackFor = Throwable.class)
-    public RoleResponse addRole(CreateRoleRequest createRoleRequest) {
+    public RoleResponse<Long> addRole(CreateRoleRequest createRoleRequest) {
         Role role = new Role();
         role.setName(createRoleRequest.getRoleName());
         role.setDescription(createRoleRequest.getDescription());
@@ -71,12 +71,13 @@ public class RoleService {
         }
 
         
-        RoleResponse roleResponse = RoleResponse.builder()
+        RoleResponse<Long> roleResponse = RoleResponse.<Long>builder()
 	                                    .roleId(createdRole.getId())
 	                                    .roleName(role.getName())
 	                                    .description(role.getDescription())
 	                                    .status(role.getStatus())
-	                                    .permissions(getPermissionNamesFromPermissionTable(createRoleRequest.getPermissionList()))
+	                                    //.permissions(getPermissionNamesFromPermissionTable(createRoleRequest.getPermissionList()))
+	                                    .permissions(createRoleRequest.getPermissionList())
 	                                    .createdBy(createRoleRequest.getCreatedBy())
 	                                    .createdAt(role.getCreatedAt())
 	                                    .build();
@@ -149,7 +150,7 @@ public class RoleService {
 
    // @PreAuthorize("hasAuthority('ROLE.READ')")
     @Transactional(readOnly = true)
-    public List<RoleResponse> getRoles(Long roleId, Boolean activatedStatus) {
+    public List<RoleResponse<String>> getRoles(Long roleId, Boolean activatedStatus) {
         List<Role> roleList = new ArrayList<>();
         if (roleId != null) {
             roleList.add(roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("Role not found for id " + roleId)));
@@ -161,10 +162,10 @@ public class RoleService {
         return getRoleResponse(roleList);
     }
 
-    private List<RoleResponse> getRoleResponse(List<Role> roleList){
-        List<RoleResponse> roleResponseList = new ArrayList<>();
+    private List<RoleResponse<String>> getRoleResponse(List<Role> roleList){
+        List<RoleResponse<String>> roleResponseList = new ArrayList<>();
         roleList.forEach(roleListObject -> {
-            RoleResponse roleResponse = RoleResponse.builder()
+            RoleResponse<String> roleResponse = RoleResponse.<String>builder()
                     .roleId(roleListObject.getId())
                     .roleName(roleListObject.getName())
                     .description(roleListObject.getDescription())
@@ -210,7 +211,7 @@ public class RoleService {
     }
     
     //@PreAuthorize("hasAuthority('ROLE.APPROVE')")
-	public RoleResponse updateRoleAuthoriser(ApprovalRequest request) {
+	public RoleResponse<String> updateRoleAuthoriser(ApprovalRequest request) {
 		Optional<Role> roleOptional = roleRepository.findById(Long.valueOf(request.getEntityId()));
 		if(!roleOptional.isPresent()) {
             log.error("Role not found for ID " + Long.valueOf(request.getEntityId()));
@@ -222,7 +223,7 @@ public class RoleService {
 		role.setUpdatedBy(request.getCreatedBy());
 		Role updatedRole = roleRepository.save(role);
 		
-		return RoleResponse.builder()
+		return RoleResponse.<String>builder()
                 .roleId(updatedRole.getId())
                 .roleName(updatedRole.getName())
                 .description(updatedRole.getDescription())
