@@ -182,7 +182,7 @@ public class RoleService {
     private List<String> getPermissions(Long roleId) {
         List<RolePermission> rolePermissionList = rolePermissionRepository.findByRoleId(roleId);
         List<String> permissionsList = new ArrayList<>();
-        rolePermissionList.forEach(rolePermissionObject -> permissionsList.add(permissionRepository.getOne(rolePermissionObject.getRoleId()).getName()));
+        rolePermissionList.forEach(rolePermissionObject -> permissionsList.add(permissionRepository.getOne(rolePermissionObject.getPermissionId()).getName()));
         return permissionsList;
     }
 
