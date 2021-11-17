@@ -23,17 +23,17 @@ spring:
             type: web
 
     datasource:
-#      username: eagleeye_user
-#      password: T@w!d2021
-#      url: jdbc:mysql://172.17.10.83:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
-      username: root
-      password: root
-      url: jdbc:mysql://localhost:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
+      username: eagleeye_user
+      password: T@w!d2021
+      url: jdbc:mysql://172.17.10.83:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
+#      username: root
+#      password: root
+#      url: jdbc:mysql://localhost:3306/authorisation_service?createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=Africa/Lagos
       driverClassName: com.mysql.cj.jdbc.Driver
       initialization-mode: always
 
     eagle-eye-manager:
-      create-user-notification-url: http://localhost:9190/api/v1/utility/notification
+      create-user-notification-url: http://172.17.10.83:9190/api/v1/utility/notification
 
     jackson:
         default-property-inclusion: NON_NULL

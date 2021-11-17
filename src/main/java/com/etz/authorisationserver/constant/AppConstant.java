@@ -20,4 +20,5 @@ public interface AppConstant {
 	public static final String ACCESS_TOKEN = "token";
 	public static final String AUTHORIZATION = "Authorization";
 	public static final String TOKEN_PREFIX = "Bearer ";
+	public static final String TOKEN_USERNAME = "user_name";
 }

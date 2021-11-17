@@ -27,6 +27,7 @@ import com.etz.authorisationserver.dto.response.RoleResponse;
 import com.etz.authorisationserver.dto.response.StringResponse;
 import com.etz.authorisationserver.services.RoleService;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -38,19 +39,19 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<ModelResponse<RoleResponse>> addRole(@RequestBody @Valid CreateRoleRequest request){
-        ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.addRole(request));
+    public ResponseEntity<ModelResponse<RoleResponse<Long>>> addRole(@RequestBody @Valid CreateRoleRequest request){
+        ModelResponse<RoleResponse<Long>> response = new ModelResponse<>(roleService.addRole(request));
         response.setStatus(HttpStatus.CREATED.value());
         response.setMessage("Role Created Successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<CollectionResponse<RoleResponse>> getRole(
+    public ResponseEntity<CollectionResponse<RoleResponse<String>>> getRole(
             @RequestParam(name = "roleId", required = false) Long roleId,
             @RequestParam(value = "status", required = false) Boolean status){
-        List<RoleResponse> roleResponseList = roleService.getRoles(roleId, status);
-        CollectionResponse<RoleResponse> collectionResponse = new CollectionResponse<>(roleResponseList);
+        List<RoleResponse<String>> roleResponseList = roleService.getRoles(roleId, status);
+        CollectionResponse<RoleResponse<String>> collectionResponse = new CollectionResponse<>(roleResponseList);
         return new ResponseEntity<>(collectionResponse, HttpStatus.OK);
     }
 
@@ -70,14 +71,16 @@ public class RoleController {
     }
 
     @PutMapping("/authoriser")
-    public ResponseEntity<ModelResponse<RoleResponse>> updateRoleAuthoriser(@RequestBody @Valid ApprovalRequest request){
-        ModelResponse<RoleResponse> response = new ModelResponse<>(roleService.updateRoleAuthoriser(request));
+    @ApiOperation(hidden = true, value = "Used internally")
+    public ResponseEntity<ModelResponse<RoleResponse<String>>> updateRoleAuthoriser(@RequestBody @Valid ApprovalRequest request){
+        ModelResponse<RoleResponse<String>> response = new ModelResponse<>(roleService.updateRoleAuthoriser(request));
         response.setStatus(HttpStatus.OK.value());
         response.setMessage("Role Authoriser Updated Successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/permissionroles")
+    @ApiOperation(hidden = true, value = "Used internally")
     public ResponseEntity<CollectionResponse<Long>> getPermissionRoleIds(@RequestParam String permissionName){
         CollectionResponse<Long> collectionResponse = new CollectionResponse<>(roleService.getRoleIdsByPermissionNane(permissionName));
         return new ResponseEntity<>(collectionResponse, HttpStatus.OK);
