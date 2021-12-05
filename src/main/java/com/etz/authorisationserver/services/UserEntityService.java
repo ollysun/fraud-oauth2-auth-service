@@ -232,6 +232,9 @@ public class UserEntityService {
 
     private List<String> getUserPermissions(Long userId) {
         List<UserPermission> userPermissionList = userPermissionRepository.findByUserId(userId);
+        if(userPermissionList.isEmpty()){
+            return Collections.emptyList();
+        }
         List<String> permissionsList = new ArrayList<>();
         userPermissionList.forEach(userPermissionListId -> permissionsList.add(permissionRepository.getOne(userPermissionListId.getPermissionId()).getName()));
         return permissionsList;
@@ -263,6 +266,9 @@ public class UserEntityService {
 
     private Long getUserRoleId(Long userId){
         UserRole userRole = userRoleRepository.findByUserId(userId);
+        if (userRole == null){
+            return null;
+        }
         return userRole.getRoleId();
     }
 
