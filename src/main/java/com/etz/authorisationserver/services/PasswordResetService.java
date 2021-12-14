@@ -80,7 +80,7 @@ public class PasswordResetService {
     	ResetPasswordTokens passToken = validatePasswordResetToken(encryptUserDetail);
 		resetPasswordRepository.save(passToken);
 		//TODO: tunde to provide redirecturl and pass encrypt userdetail as queryparam;
-		return "redirect url";
+		return "http://172.17.10.83:3004/resetpassword?userdetail=" + encryptUserDetail;
 	}
 
 
