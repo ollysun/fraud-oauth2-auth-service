@@ -101,7 +101,7 @@ mail:
 #  port: 587
   smtp: mail.etranzact.com
   username: eagleeye@etranzactng.com
-  password: etz@1234
+  password: eaglei@1234
   sender: ETZ-EAGLE-EYE-MANAGER
   port: 25
   properties:
