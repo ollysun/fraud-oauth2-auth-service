@@ -42,7 +42,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests()
                 .antMatchers("/health","/info", "/trace", "/monitoring",
-                        "/webjars/**","/swagger.html")
+                        "/webjars/**","/swagger.html", "/reset/**", "/reset?***", "/password/forget")
                 .permitAll()
                 .antMatchers(SWAGGER_WHITELIST)
                 .permitAll();
