@@ -67,6 +67,12 @@ public class UserEntityService {
     @Transactional(rollbackFor = Throwable.class)
     public UserResponse createUser(CreateUserRequest createUserRequest){
         List<UserPermission> userPermissionList = new ArrayList<>();
+
+        if(userRepository.existsByUsernameOrEmailOrPhoneOrPassword(createUserRequest.getUsername(),
+                createUserRequest.getEmail(), createUserRequest.getPhone(), createUserRequest.getPassword())){
+            throw new AuthServiceException("Similar record exist for username " +  createUserRequest.getUsername());
+        }
+
         createUserRequest.setStatus(Boolean.TRUE);
         createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 
