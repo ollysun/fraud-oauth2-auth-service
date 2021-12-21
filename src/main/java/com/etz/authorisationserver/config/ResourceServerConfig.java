@@ -31,7 +31,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private static final String[] SWAGGER_WHITELIST = {
             // -- swagger ui
             "/swagger", "/v2/api-docs", "/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/actuator/health",
-            "/configuration/security", "/swagger-ui.html", "/webjars/**" };
+            "/configuration/security", "/swagger-ui.html", "/webjars/**", "/api/v1/reset/**", "/api/v1/reset?***", "/api/v1/password/forget" };
 
     @Value("${security.secret-key}")
     private String secretKey;
