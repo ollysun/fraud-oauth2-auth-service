@@ -117,10 +117,10 @@ public class PasswordResetService {
 		}
 		user.setPassword(passwordEncoder.encode(changePasswordRequestModel.getNewPassword()));
 		userRepository.save(user);
-		//TODO: Notify user of new password
+		//TODO: mail Notify user of new password
 		return Boolean.TRUE;
 	}
-    
+    // checking the password against user details object
     private boolean checkIfValidOldPassword(String oldPassword, UserEntity user){
         return passwordEncoder.matches(oldPassword, user.getPassword());
     }

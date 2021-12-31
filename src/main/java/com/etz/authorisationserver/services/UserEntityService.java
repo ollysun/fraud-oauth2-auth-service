@@ -118,8 +118,9 @@ public class UserEntityService {
         }
         
        UserResponse userResponse = outputUserResponse(user, createUserRequest);
-       
-       // create user notification
+
+        // todo: sent mail notification to user under the role approval
+        // create user notification
        appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), createUserRequest.getCreatedBy());
        
        return userResponse;
@@ -210,7 +211,7 @@ public class UserEntityService {
             }
 
         }
-        
+        //todo send mail notification to user with approval role on userupdated
         // create user notification
         appUtil.createUserNotification(AppConstant.USER, String.valueOf(user.getId()), updateUserRequest.getUpdatedBy());
         return true;
